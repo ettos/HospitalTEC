@@ -15,7 +15,7 @@ import utilidades.ReportesDB;
 
 public class PacienteControler {
 	
-	public static void agregarCita(int pCedula, int pArea,String pAreaN,String pObservacion,Date fecha) throws SQLException, MessagingException {
+	public static void agregarCita(int pCedula, int pArea,String pAreaN,String pObservacion,Date fecha,String correo,String numeroT) throws SQLException, MessagingException {
 		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     String currentTime = sdf.format(fecha);
 		
@@ -27,7 +27,7 @@ public class PacienteControler {
 		str+="Se ha agregado una cita nueva\n\nDetalles de la cita\n";
 		str+=newCita.toString();
 		
-		//EnvioCorreo.enviarCorreo("mols1@live.com", str);
+		EnvioCorreo.enviarCorreo(correo, str);
 		
 		java.util.Date hoy= new java.util.Date();
 		fecha=new Date(hoy.getTime());

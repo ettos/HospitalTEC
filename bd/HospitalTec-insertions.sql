@@ -14,7 +14,7 @@ INSERT INTO AreaDeTrabajo (id,nombre) VALUES
 INSERT INTO Persona (cedula,nombre,primerApellido,segundoApellido) VALUES 
 (116840425,"Manuel","Loaiza", "Sanchez"),
 (305130565,"Josseline", "Mata","Mora"),
-(2019203238,"Nazareth","Briceñi","Madriz"),
+(118100381,"Nazareth","Briceñi","Madriz"),
 (901060129,"Elodia","Sanchez","Badilla"),
 (104780154,"Stefhanie","Loaiza","Sanchez");
 
@@ -27,14 +27,14 @@ INSERT INTO Paciente (cedula,contrasenna,fechaNacimiento,TipoDeSangre,nacionalid
 INSERT INTO Funcionario (cedula,areaDeTrabajo,identificacion,contrasenna,tipoFuncionario,fechaDeIngreso) VALUES
 (116840425,1,1111,"1234","Ayudante de sala",STR_TO_DATE('May 15,2020', '%M %d,%Y')),
 (305130565,2,2222,"1234","Enfermero",STR_TO_DATE('May 15,2020', '%M %d,%Y')),
-(2019203238,3,3333,"1234","Secretario",STR_TO_DATE('May 15,2020', '%M %d,%Y')),
+(118100381,3,3333,"1234","Secretario",STR_TO_DATE('May 15,2020', '%M %d,%Y')),
 (901060129,1,4444,"1234","Enfermero",STR_TO_DATE('May 15,2020', '%M %d,%Y'));
 
 INSERT INTO Enfermero (cedula,identificacion,indicadorPersonasCargo,experienciaCapacitaciones) VALUES
 (305130565,2222,false,false);
 
 INSERT INTO Doctor (cedula,identificacion,codigoMedico,especialidad) VALUES
-(2019203238,3333,1,"Cirujano");
+(118100381,3333,1,"Cirujano");
 
 
 -- INSERTS TABLAS INTERMEDIAS
@@ -47,6 +47,6 @@ INSERT INTO CentoDeAtencionAreaDeTrabajo (codigoCentro, idArea) VALUES
 INSERT INTO CentoDeAtencionPersona (codigoCentro, cedula) VALUES
 (1,116840425),
 (1,305130565),
-(1,2019203238),
+(1,118100381),
 (1,901060129),
 (1,104780154);

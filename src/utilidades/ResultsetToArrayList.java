@@ -11,6 +11,7 @@ import logicadenegocios.CentroDeAtencion;
 import logicadenegocios.Cita;
 import logicadenegocios.Diagnostico;
 import logicadenegocios.Funcionario;
+import logicadenegocios.Hospitalizacion;
 import logicadenegocios.Paciente;
 import logicadenegocios.Persona;
 import logicadenegocios.Tratamiento;
@@ -103,14 +104,14 @@ public class ResultsetToArrayList {
 		ArrayList<Cita> lista = new ArrayList<Cita>();
 
 		while (rs.next()) {
-			AreaDeTrabajo a = new AreaDeTrabajo(rs.getInt("areaDeTrabajo"), null);
+			AreaDeTrabajo a = new AreaDeTrabajo(rs.getInt("Cita.areaDeTrabajo"), null);
 
 			java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			java.util.Date fecha;
 			try {
-				fecha = sdf.parse(rs.getString("fecha"));
-				Cita newCita = new Cita(rs.getInt("identificador"), rs.getInt("cedula"), rs.getString("estado"), a,
-						rs.getString("observacion"), new Date(fecha.getTime()));
+				fecha = sdf.parse(rs.getString("Cita.fecha"));
+				Cita newCita = new Cita(rs.getInt("Cita.identificador"), rs.getInt("Cita.cedula"), rs.getString("Cita.estado"), a,
+						rs.getString("Cita.observacion"), new Date(fecha.getTime()));
 				lista.add(newCita);
 
 			} catch (ParseException e) {
@@ -150,6 +151,18 @@ public class ResultsetToArrayList {
 		}
 		return lista;
 	}
+	
+	public static ArrayList<Diagnostico> tDiagnosticoPaciente(ResultSet rs) throws SQLException {
+		ArrayList<Diagnostico> lista = new ArrayList<Diagnostico>();
+
+		while (rs.next()) {
+
+			Diagnostico newDiagnostico = new Diagnostico(rs.getInt("DiagnosticoPaciente.cedula"),rs.getString("DiagnosticoPaciente.nombre"),rs.getString("DiagnosticoPaciente.nivel"),rs.getString("DiagnosticoPaciente.observaciones"));
+			lista.add(newDiagnostico);
+
+		}
+		return lista;
+	}
 
 	public static ArrayList<Tratamiento> tTratamiento(ResultSet rs) throws SQLException {
 		ArrayList<Tratamiento> lista = new ArrayList<Tratamiento>();
@@ -158,6 +171,32 @@ public class ResultsetToArrayList {
 
 			Tratamiento newTratamiento = new Tratamiento(rs.getString("nombre"),rs.getString("tipo"));
 			lista.add(newTratamiento);
+
+		}
+		return lista;
+	}
+	
+	public static ArrayList<Tratamiento> tTratamientoPaciente(ResultSet rs) throws SQLException {
+		ArrayList<Tratamiento> lista = new ArrayList<Tratamiento>();
+
+		while (rs.next()) {
+
+			Tratamiento newTratamiento = new Tratamiento(rs.getInt("cedula"),rs.getString("nombre"),rs.getString("dosis"),  rs.getString("tipo"));
+			lista.add(newTratamiento);
+
+		}
+		return lista;
+	}
+	
+	public static ArrayList<Hospitalizacion> tHospitalizacion(ResultSet rs) throws SQLException {
+		ArrayList<Hospitalizacion> lista = new ArrayList<Hospitalizacion>();
+
+		while (rs.next()) {
+
+			Hospitalizacion newHospitalizacion = new Hospitalizacion(rs.getInt("Hospitalizacion.codigoCentro"), rs.getInt("Hospitalizacion.cedula"),
+					rs.getString("Hospitalizacion.diagnostico"), rs.getDate("Hospitalizacion.fechaInicio"), rs.getDate("Hospitalizacion.fechaFinal"),
+					rs.getInt("Hospitalizacion.idArea"), rs.getInt("Hospitalizacion.identificacion"));
+			lista.add(newHospitalizacion);
 
 		}
 		return lista;
