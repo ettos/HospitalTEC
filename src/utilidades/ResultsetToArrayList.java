@@ -103,14 +103,14 @@ public class ResultsetToArrayList {
 		ArrayList<Cita> lista = new ArrayList<Cita>();
 
 		while (rs.next()) {
-			AreaDeTrabajo a = new AreaDeTrabajo(rs.getInt("areaDeTrabajo"), null);
+			AreaDeTrabajo a = new AreaDeTrabajo(rs.getInt("Cita.areaDeTrabajo"), null);
 
 			java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			java.util.Date fecha;
 			try {
-				fecha = sdf.parse(rs.getString("fecha"));
-				Cita newCita = new Cita(rs.getInt("identificador"), rs.getInt("cedula"), rs.getString("estado"), a,
-						rs.getString("observacion"), new Date(fecha.getTime()));
+				fecha = sdf.parse(rs.getString("Cita.fecha"));
+				Cita newCita = new Cita(rs.getInt("Cita.identificador"), rs.getInt("Cita.cedula"), rs.getString("Cita.estado"), a,
+						rs.getString("Cita.observacion"), new Date(fecha.getTime()));
 				lista.add(newCita);
 
 			} catch (ParseException e) {
@@ -145,6 +145,18 @@ public class ResultsetToArrayList {
 		while (rs.next()) {
 
 			Diagnostico newDiagnostico = new Diagnostico(rs.getString("nombre"));
+			lista.add(newDiagnostico);
+
+		}
+		return lista;
+	}
+	
+	public static ArrayList<Diagnostico> tDiagnosticoPaciente(ResultSet rs) throws SQLException {
+		ArrayList<Diagnostico> lista = new ArrayList<Diagnostico>();
+
+		while (rs.next()) {
+
+			Diagnostico newDiagnostico = new Diagnostico(rs.getInt("DiagnosticoPaciente.cedula"),rs.getString("DiagnosticoPaciente.nombre"),rs.getString("DiagnosticoPaciente.nivel"),rs.getString("DiagnosticoPaciente.observaciones"));
 			lista.add(newDiagnostico);
 
 		}

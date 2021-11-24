@@ -245,6 +245,25 @@ public class PantallaGestionDiagnosticoTratamiento extends JFrame {
 		btnNewButton.setBounds(10, 11, 40, 40);
 		contentPane.add(btnNewButton);
 		
+		JButton btnRecomendar = new JButton("Recomendar");
+    btnRecomendar.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        	String diagnostico=cbDiagnostico.getSelectedItem().toString();
+        	String tratamiento=cbTratamiento.getSelectedItem().toString();
+        	try {
+						FuncionarioControler.agregarDiagnosticoTratamiento(diagnostico,tratamiento);
+						JOptionPane.showMessageDialog(null, "¡El tratamiento ha sido recomendado!", "¡Tratamiento Recomendado!", JOptionPane.INFORMATION_MESSAGE);
+					} catch (SQLException e1) {
+						JOptionPane.showMessageDialog(null, "¡No se ha podido recomendar el tratamiento!", "¡Error!", JOptionPane.ERROR_MESSAGE);
+						e1.printStackTrace();
+					}
+        }
+    });
+    btnRecomendar.setBounds(369, 209, 124, 23);
+    contentPane.add(btnRecomendar);
+		
+		
+		
 		
 		actualizarcb();
 	}

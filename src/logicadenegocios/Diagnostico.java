@@ -10,7 +10,7 @@ public class Diagnostico {
   private ArrayList<Tratamiento> tratamientos;
   
   public Diagnostico(int pCedula,String pNombre, String pNivel, String pObservaciones) {
-  cedula=pCedula;
+  setCedula(pCedula);
 	nombre=pNombre;
 	nivel=pNivel;
 	observaciones=pObservaciones;
@@ -61,5 +61,13 @@ public class Diagnostico {
 	}
 	return cadena;
  }
+
+	public int getCedula() {
+		return cedula;
+	}
+
+	public void setCedula(int cedula) {
+		this.cedula = cedula;
+	}
 
 }

@@ -2,12 +2,62 @@ package controladores;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import excepciones.EmptyListException;
+import logicadenegocios.Cita;
+import logicadenegocios.Diagnostico;
+import logicadenegocios.Tratamiento;
 import utilidades.FuncionesDB;
 
 public class FuncionarioControler {
 
+	public static ArrayList<Tratamiento> consultarDiagnosticoTratamiento(String nombreDiagnostico) throws SQLException, EmptyListException{
+		ArrayList<Tratamiento> lista=FuncionesDB.consultarDiagnosticoTratamiento(nombreDiagnostico);
+		return lista;
+	}
+	
+	public static ArrayList<Cita> consultarCitas(String nombre,int area,String estado,Date fecha1,Date fecha2) throws SQLException, EmptyListException{
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date1 = sdf.format(fecha1);
+    sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date2 = sdf.format(fecha2);
+		ArrayList<Cita> lista=FuncionesDB.consultarCitas(nombre, area, estado, date1, date2);
+		return lista;
+	}
+	
+	public static ArrayList<Cita> consultarCitas() throws SQLException, EmptyListException{
+
+		ArrayList<Cita> lista=FuncionesDB.consultarCitas();
+		return lista;
+	}
+	public static ArrayList<Cita> consultarCitasArea(int area) throws SQLException, EmptyListException{
+
+		ArrayList<Cita> lista=FuncionesDB.consultarCitasArea(area);
+		return lista;
+	}
+	
+	public static ArrayList<Diagnostico> consultarDiagnostico(String nombre, String diagnostico, String nivel, Date fecha1,
+			Date fecha2) throws SQLException, EmptyListException {
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date1 = sdf.format(fecha1);
+    sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date2 = sdf.format(fecha2);
+		ArrayList<Diagnostico> lista=FuncionesDB.consultarDiagnostico(nombre, diagnostico, nivel, date1, date2);
+		return lista;
+	}
+	
+	public static ArrayList<Diagnostico> consultarDiagnostico() throws SQLException, EmptyListException {
+		
+		ArrayList<Diagnostico> lista=FuncionesDB.consultarDiagnostico();
+		return lista;
+	}
+
+public static ArrayList<Diagnostico> consultarDiagnostico(String nombre) throws SQLException, EmptyListException {
+		
+		ArrayList<Diagnostico> lista=FuncionesDB.consultarDiagnostico(nombre);
+		return lista;
+	}
 	public static void agregarDiagnostico(String nombre) throws SQLException {
 
 		FuncionesDB.agregarDiagnostico(nombre);
@@ -22,12 +72,22 @@ public class FuncionarioControler {
 
 		FuncionesDB.updateDiagnostico(nombre,nNombre);
 	}
+	
+	public static void agregarDiagnosticoTratamiento(String nombreDiagnostico,String nombreTratamiento) throws SQLException {
+
+		FuncionesDB.agregarDiagnosticoTratamiento(nombreDiagnostico, nombreTratamiento);
+	}
 
 	public static void agregarTratamiento(String nombre, String tipo) throws SQLException {
 
 		FuncionesDB.agregarTratamiento(nombre, tipo);
 	}
+	
+	public static void agregarTratamientoPaciente(int cedula,String nombre, String dosis) throws SQLException {
 
+		FuncionesDB.agregarTratamientoPaciente(cedula,nombre, dosis);
+	}
+	
 	public static void eliminarTratamiento(String nombre) throws SQLException {
 
 		FuncionesDB.eliminarTratamiento(nombre);
@@ -76,5 +136,13 @@ public class FuncionarioControler {
 
 		FuncionesDB.agregarBitacora(idFuncionario, idPaciente, idCita, currentTime, descripcion);
 	}
+	
+	public static void agregarDiagnosticoPaciente(int cedula, String nombre,String nivel,String observaciones) throws SQLException {
+		FuncionesDB.agregarDiagnosticoPaciente(cedula, nombre, nivel, observaciones);
+	}
+	public static void agregarDiagnosticoCita(String nombre, int id) throws SQLException {
+		FuncionesDB.agregarDiagnosticoCita(nombre, id);
+	}
+	
 
 }

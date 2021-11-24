@@ -3,7 +3,7 @@ DROP DATABASE HospitalTec	;
 CREATE DATABASE HospitalTec	;
 USE HospitalTec; 
 
-SELECT * FROM Vacuna
+SELECT * FROM Vacuna;
 
 CREATE TABLE CentroDeAtencion(
   codigoCentro int PRIMARY KEY,
@@ -12,7 +12,6 @@ CREATE TABLE CentroDeAtencion(
   capacidadMaxima int, 
   tipoDeCentro varchar(100)
 );
-
 CREATE TABLE AreaDeTrabajo(
   id int PRIMARY KEY, 
   nombre varchar (100)
@@ -118,7 +117,17 @@ CREATE TABLE Tratamiento(
    FOREIGN KEY (cedula) REFERENCES Persona(cedula) ON DELETE CASCADE ON UPDATE CASCADE,
    FOREIGN KEY (nombre) REFERENCES Diagnostico(nombre) ON DELETE CASCADE ON UPDATE CASCADE
  );
+SELECT DiagnosticoPaciente.cedula, DiagnosticoPaciente.nombre,DiagnosticoPaciente.nivel,DiagnosticoPaciente.observaciones FROM 
+(((DiagnosticoPaciente JOIN DiagnosticoCita ON DiagnosticoPaciente.nombre=DiagnosticoCita.nombre) JOIN
+Cita ON Cita.identificador=DiagnosticoCita.identificador) JOIN
+Persona ON DiagnosticoPaciente.cedula=Persona.cedula) WHERE
+ (Cita.fecha BETWEEN '2020/05/10' AND '2020/05/16') AND
+ Persona.nombre='Manuel' AND
+ DiagnosticoPaciente.nombre='' AND
+ DiagnosticoPaciente.nivel='';
  
+
+
 CREATE TABLE TratamientoPaciente(
    cedula int,
    nombre varchar (100), 
@@ -127,8 +136,8 @@ CREATE TABLE TratamientoPaciente(
    FOREIGN KEY (nombre) REFERENCES Tratamiento(nombre) ON DELETE CASCADE ON UPDATE CASCADE
 
  );
-  
-  CREATE TABLE DiagnosticoTratamiento(
+
+ CREATE TABLE DiagnosticoTratamiento(
    nombreDiagnostico varchar (100), 
    nombreTratamiento varchar (100),
    FOREIGN KEY (nombreDiagnostico) REFERENCES Diagnostico(nombre) ON DELETE CASCADE ON UPDATE CASCADE,
