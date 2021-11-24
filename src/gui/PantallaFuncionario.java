@@ -855,6 +855,14 @@ public class PantallaFuncionario extends JFrame {
 		lblLogo_2.setIcon(new ImageIcon("\\img\\ConsultasCitasOscura.png"));
 		lblLogo_2.setBounds(241, 17, 50, 50);
 		pnlCitasConsultas.add(lblLogo_2);
+		
+		JButton btnReporteC = new JButton("Reporte");
+		btnReporteC.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnReporteC.setBounds(10, 440, 89, 23);
+		pnlCitasConsultas.add(btnReporteC);
 
 		JPanel pnlDiagnosticoConsulta = new JPanel();
 		pnlDiagnosticoConsulta.setBackground(Color.decode("#d9d8dd"));
@@ -1075,6 +1083,14 @@ public class PantallaFuncionario extends JFrame {
 		lblLogo_3.setIcon(new ImageIcon("img\\logoDiagnostico.png"));
 		lblLogo_3.setBounds(237, 11, 50, 50);
 		pnlDiagnosticoConsulta.add(lblLogo_3);
+		
+		JButton btnReporteD = new JButton("Reporte");
+		btnReporteD.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnReporteD.setBounds(10, 440, 89, 23);
+		pnlDiagnosticoConsulta.add(btnReporteD);
 
 		JPanel pnlTratamientoConsulta = new JPanel();
 		pnlTratamientoConsulta.setBackground(Color.decode("#f3f2f5"));
@@ -1314,6 +1330,14 @@ public class PantallaFuncionario extends JFrame {
 		lblLogo_5.setIcon(new ImageIcon("img\\logoTratamientoOscuro.png"));
 		lblLogo_5.setBounds(240, 11, 50, 50);
 		pnlTratamientoConsulta.add(lblLogo_5);
+		
+		JButton btnReporteT = new JButton("Reporte");
+		btnReporteT.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnReporteT.setBounds(9, 440, 89, 23);
+		pnlTratamientoConsulta.add(btnReporteT);
 
 		JPanel pnlHospitalizacion = new JPanel();
 		pnlHospitalizacion.setBackground(Color.decode("#3c4f6d"));
@@ -1404,6 +1428,14 @@ public class PantallaFuncionario extends JFrame {
 		btnSeguimiento.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		btnSeguimiento.setBounds(532, 121, 159, 23);
 		pnlHospitalizacion.add(btnSeguimiento);
+		
+		JButton btnReporteH = new JButton("Reporte");
+		btnReporteH.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnReporteH.setBounds(602, 86, 89, 23);
+		pnlHospitalizacion.add(btnReporteH);
 
 		JButton btnGestionDyT = new JButton("");
 		btnGestionDyT.setBackground(Color.decode("#f6f7f2"));

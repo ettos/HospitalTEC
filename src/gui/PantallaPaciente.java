@@ -524,6 +524,10 @@ public class PantallaPaciente extends JFrame {
 		lblLogoConsultarCitas.setIcon(new ImageIcon("img\\ConsultaCitas.png"));
 		lblLogoConsultarCitas.setBounds(165, 11, 50, 50);
 		pnlConsultarCitas.add(lblLogoConsultarCitas);
+		
+		JButton btnReporteC = new JButton("Reporte");
+		btnReporteC.setBounds(45, 359, 89, 23);
+		pnlConsultarCitas.add(btnReporteC);
 
 		JPanel pnlDiagnosticos = new JPanel();
 		pnlDiagnosticos.setBackground(Color.decode("#a5b5c4"));
@@ -642,6 +646,10 @@ public class PantallaPaciente extends JFrame {
 		lblLogoDiagnostico.setIcon(new ImageIcon("img\\logoDiagnostico.png"));
 		lblLogoDiagnostico.setBounds(189, 11, 50, 50);
 		pnlDiagnosticos.add(lblLogoDiagnostico);
+		
+		JButton btnReporteD = new JButton("Reporte");
+		btnReporteD.setBounds(50, 359, 89, 23);
+		pnlDiagnosticos.add(btnReporteD);
 
 		JPanel pnlTratamientos = new JPanel();
 		pnlTratamientos.setBackground(Color.decode("#3c4f6d"));
@@ -763,6 +771,10 @@ public class PantallaPaciente extends JFrame {
 		lblLogoTratamiento.setIcon(new ImageIcon("img\\logoTratamiento.png"));
 		lblLogoTratamiento.setBounds(204, 11, 50, 50);
 		pnlTratamientos.add(lblLogoTratamiento);
+		
+		JButton btnReporteT = new JButton("Reporte");
+		btnReporteT.setBounds(45, 359, 89, 23);
+		pnlTratamientos.add(btnReporteT);
 
 		JPanel pnlHospitalizaciones = new JPanel();
 		pnlHospitalizaciones.setBackground(Color.decode("#0a1944"));
@@ -800,6 +812,10 @@ public class PantallaPaciente extends JFrame {
 		btnConsultarHospitalizaciones.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		btnConsultarHospitalizaciones.setBounds(239, 335, 89, 23);
 		pnlHospitalizaciones.add(btnConsultarHospitalizaciones);
+		
+		JButton btnReporteH = new JButton("Reporte");
+		btnReporteH.setBounds(480, 336, 89, 23);
+		pnlHospitalizaciones.add(btnReporteH);
 
 		actualizarTablas();
 
