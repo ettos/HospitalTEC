@@ -1,0 +1,105 @@
+INSERT INTO Cita (identificador, cedula, areaDeTrabajo, estado, fecha) VALUES (22, 901060129, 3, "Registrada", STR_TO_DATE('May 15,2020', '%M %d,%Y'));
+INSERT INTO Cita (identificador, cedula, areaDeTrabajo, estado, fecha) VALUES (23, 104780154, 4, "Asignada", STR_TO_DATE('May 30,2020', '%M %d,%Y'));
+
+INSERT INTO Diagnostico(nombre, nivel, observaciones) VALUES ("Gripe", "Leve", "Sin observaciones");
+INSERT INTO Diagnostico(nombre, nivel, observaciones) VALUES ("Varicela", "Grave", "Sin observaciones");
+
+INSERT INTO Tratamiento(nombre, dosis, tipo) VALUES ("Paracetamol", "Una pastilla", "Medicamento"), ("Corisan","Dos pastillas","Medicamento"), ("Crema","Una vez al dia","Medicamento");
+
+INSERT INTO DiagnosticoCita(nombre, identificador) VALUES ("Gripe", 22),("Varicela", 23);
+INSERT INTO DiagnosticoTratamiento(nombreDiagnostico, nombreTratamiento) VALUES ("Paracetamol","Gripe"), ("Corisan","Gripe"), ("Crema","Varicela");
+
+INSERT INTO Hospitalizacion(codigoCentro,cedula,diagnostico,fechaInicio,fechaFinal,idArea,identificacion) VALUES (1, 901060129, "Gripe", STR_TO_DATE('May 15,2020', '%M %d,%Y'), STR_TO_DATE('May 17,2020', '%M %d,%Y'), 3, 1111);
+
+
+Select * FROM Cita;
+SELECT Cita.identificador, Cita.cedula, Cita.areaDeTrabajo, Cita.fecha FROM (Cita INNER JOIN Paciente ON Cita.cedula = Paciente.cedula) WHERE Cita.cedula=104780154;
+
+--                                                                CONSULTAS PACIENTE 
+
+-- Lista de citas del paciente --
+SELECT * FROM Cita WHERE cedula= 104780154;
+
+-- Lista de citas del paciente por rango de fecha--
+SELECT * FROM Cita where (fecha BETWEEN '2020/05/10' AND '2020/05/16') AND cedula=901060129;
+SELECT * FROM Cita where (fecha BETWEEN '2022-01-01 04:04:00' AND '2022-10-25 04:04:00') AND cedula=901060129;
+
+-- Lista de citas del paciente por estado--
+SELECT * FROM Cita where (estado="Registrada") AND Cita.cedula=104780154;
+
+-- Lista de citas del paciente por especialidad --
+SELECT Cita.identificador, Cita.cedula, Cita.areaDeTrabajo, Cita.fecha FROM (Cita INNER JOIN AreaDeTrabajo ON Cita.areaDeTrabajo = AreaDeTrabajo.id) WHERE AreaDeTrabajo.nombre="Salud Dental" AND Cita.cedula=104780154;
+
+-- Lista con la información de los diagnósticos del paciente. 
+SELECT Diagnostico.nombre, Diagnostico.nivel, Diagnostico.observaciones, Cita.cedula, Cita.identificador FROM ((Diagnostico INNER JOIN DiagnosticoCita ON Diagnostico.nombre = DiagnosticoCita.nombre) INNER JOIN Cita ON Cita.identificador=DiagnosticoCita.identificador) WHERE Cita.cedula=104780154;
+
+-- Lista según el rango de fecha en que se realizó la cita en que se hizo el diagnóstico
+SELECT Diagnostico.nombre, Diagnostico.nivel, Diagnostico.observaciones, Cita.cedula, Cita.identificador FROM ((Diagnostico INNER JOIN DiagnosticoCita ON Diagnostico.nombre = DiagnosticoCita.nombre) INNER JOIN Cita ON Cita.identificador=DiagnosticoCita.identificador) WHERE (fecha BETWEEN '2020/05/10' AND '2020/05/16') AND Cita.cedula=901060129;
+
+-- Lista según nivel de diagnóstico
+SELECT Diagnostico.nombre, Diagnostico.nivel, Diagnostico.observaciones, Cita.cedula, Cita.identificador FROM ((Diagnostico INNER JOIN DiagnosticoCita ON Diagnostico.nombre = DiagnosticoCita.nombre) INNER JOIN Cita ON Cita.identificador=DiagnosticoCita.identificador) WHERE nivel="Leve" AND Cita.cedula=901060129;
+
+-- Lista según nombre de diagnóstico.
+SELECT Diagnostico.nombre, Diagnostico.nivel, Diagnostico.observaciones, Cita.cedula, Cita.identificador FROM ((Diagnostico INNER JOIN DiagnosticoCita ON Diagnostico.nombre = DiagnosticoCita.nombre) INNER JOIN Cita ON Cita.identificador=DiagnosticoCita.identificador) WHERE Diagnostico.nombre="Gripe" AND Cita.cedula=901060129;
+
+-- Listado con la información de los tratamientos. 
+SELECT Diagnostico.nombre, Diagnostico.nivel, Diagnostico.observaciones, Cita.cedula, Cita.identificador FROM ((Diagnostico INNER JOIN DiagnosticoCita ON Diagnostico.nombre = DiagnosticoCita.nombre) INNER JOIN Cita ON Cita.identificador=DiagnosticoCita.identificador) WHERE Cita.cedula=104780154;
+-- Lista por rango de fechas en que se realizó la cita en que se recomendó el tratamiento
+-- Lista por tipo de tratamiento
+-- Lista por nombre de tratamiento.
+
+-- Hospitalizaciones registradas para ese paciente: se muestra el listado de las hospitalizaciones con la información correspondiente para cada una de ellas.
+SELECT * FROM Hospitalizacion WHERE cedula=901060129;
+
+--                                                  CONSULTAS DOCTOR
+
+-- Lista de citas --
+SELECT * FROM Cita;
+
+-- Lista de citas por rango de fechas
+SELECT * FROM Cita where (fecha BETWEEN '2020/05/10' AND '2020/05/16');
+
+-- Lista de citas por estado
+SELECT * FROM Cita where (estado="Registrada");
+
+-- Lista de citas por especialidad 
+SELECT Cita.identificador, Cita.cedula, Cita.areaDeTrabajo, Cita.fecha FROM (Cita INNER JOIN AreaDeTrabajo ON Cita.areaDeTrabajo = AreaDeTrabajo.id) WHERE AreaDeTrabajo.nombre="Salud Dental";
+
+-- Lista de citas por nombre de paciente.
+SELECT Cita.identificador, Cita.cedula, Cita.areaDeTrabajo, Cita.fecha FROM (Cita INNER JOIN Persona ON Cita.cedula=Persona.cedula) Where Persona.nombre="Elodia";
+
+-- Lista con la información de los diagnósticos del paciente. 
+SELECT Diagnostico.nombre, Diagnostico.nivel, Diagnostico.observaciones, Cita.cedula, Cita.identificador FROM ((Diagnostico INNER JOIN DiagnosticoCita ON Diagnostico.nombre = DiagnosticoCita.nombre) INNER JOIN Cita ON Cita.identificador=DiagnosticoCita.identificador) WHERE Cita.cedula=104780154;
+
+-- Lista según el rango de fecha en que se realizó la cita en que se hizo el diagnóstico
+SELECT Diagnostico.nombre, Diagnostico.nivel, Diagnostico.observaciones, Cita.cedula, Cita.identificador FROM ((Diagnostico INNER JOIN DiagnosticoCita ON Diagnostico.nombre = DiagnosticoCita.nombre) INNER JOIN Cita ON Cita.identificador=DiagnosticoCita.identificador) WHERE (fecha BETWEEN '2020/05/10' AND '2020/05/16') AND Cita.cedula=901060129;
+
+-- Lista según nivel de diagnóstico
+SELECT Diagnostico.nombre, Diagnostico.nivel, Diagnostico.observaciones, Cita.cedula, Cita.identificador FROM ((Diagnostico INNER JOIN DiagnosticoCita ON Diagnostico.nombre = DiagnosticoCita.nombre) INNER JOIN Cita ON Cita.identificador=DiagnosticoCita.identificador) WHERE nivel="Leve" AND Cita.cedula=901060129;
+
+-- Lista según nombre de diagnóstico.
+SELECT Diagnostico.nombre, Diagnostico.nivel, Diagnostico.observaciones, Cita.cedula, Cita.identificador FROM ((Diagnostico INNER JOIN DiagnosticoCita ON Diagnostico.nombre = DiagnosticoCita.nombre) INNER JOIN Cita ON Cita.identificador=DiagnosticoCita.identificador) WHERE Diagnostico.nombre="Gripe" AND Cita.cedula=901060129;
+
+-- Cantidad de citas registradas en el sistema
+SELECT count(*) FROM cita;
+
+-- Cantidad de citas por rango de fechas
+
+SELECT count(*) FROM cita WHERE (fecha BETWEEN '2020/05/10' AND '2020/05/16');
+
+-- Cantidad de citas por especialidad 
+SELECT count(*) FROM (Cita INNER JOIN AreaDeTrabajo ON Cita.areaDeTrabajo = AreaDeTrabajo.id) WHERE AreaDeTrabajo.nombre="Salud Dental";
+
+-- Cantidad de citas por estado de la cita.
+SELECT count(*) FROM Cita WHERE estado="Registrada";
+
+-- Cantidad de diagnósticos 
+SELECT count(*) FROM Diagnostico;
+
+-- Cantidad de diagnósticos por nivel de los diagnósticos.
+SELECT count(*) FROM Diagnostico WHERE nivel="Leve";
+
+-- Conteo por especialidad 
+
+
+-- Conteo por paciente.
