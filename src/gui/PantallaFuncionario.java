@@ -31,6 +31,7 @@ import logicadenegocios.Funcionario;
 import logicadenegocios.Hospitalizacion;
 import logicadenegocios.Tratamiento;
 import utilidades.FuncionesDB;
+import utilidades.ReportesDB;
 import utilidades.UsuarioLogueado;
 import utilidades.Utilidad;
 
@@ -114,6 +115,14 @@ public class PantallaFuncionario extends JFrame {
 	private JTextField txtMesConsulta2D;
 	private JTextField txtAnnoConsulta2D;
 	private JTextField txtNombrePacienteConsultaD;
+	private JTextField txtNombrePacienteCT;
+	private JTextField txtDiaConsultaT;
+	private JTextField txtMesConsultaT;
+	private JTextField txtAnnoConsultaT;
+	private JTextField txtDiaConsulta2T;
+	private JTextField txtMesConsulta2T;
+	private JTextField txtAnnoConsulta2T;
+	private JTextField txtNombrePacienteH;
 
 	/**
 	 * Create the frame.
@@ -288,6 +297,47 @@ public class PantallaFuncionario extends JFrame {
 		btnEliminarCita.setBounds(42, 173, 120, 23);
 		pnlAsignarCitas.add(btnEliminarCita);
 
+		JButton btnConcluirCita = new JButton("Concluir Cita");
+    btnConcluirCita.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        	
+  				try {
+          	int i = tableMisPacientes.getSelectedRow();
+  					int id = Utilidad.cadenaAEntero(tableMisPacientes.getModel().getValueAt(i, 0).toString());
+
+  					// Verificacion de fechas
+  					String f = tableMisPacientes.getModel().getValueAt(i, 3).toString();
+  					java.util.Date javaDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(f);
+  					Date fecha1 = new Date(javaDate.getTime());
+  					Date fecha2 = Utilidad.getMannana();
+
+  					FuncionarioControler.concluirCita(UsuarioLogueado.getUsuarioLogueado().getIdentificacion(), id);
+  					JOptionPane.showMessageDialog(null, "Cita Concluida", "¡Exito en la transaccion!",
+  							JOptionPane.INFORMATION_MESSAGE);
+
+  					actualizarTablas();
+  				} catch (IsDigitNotExistException e1) {
+  					JOptionPane.showMessageDialog(null, "El id no corresponde a un numero", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+  				} catch (ParseException e1) {
+  					e1.printStackTrace();
+  				} catch (SQLException e1) {
+  					JOptionPane.showMessageDialog(null,
+  							"No se ha podido concluir la cita\nPor favor verifique que los datos esten correctos.", "¡ERROR!",
+  							JOptionPane.ERROR_MESSAGE);
+  					e1.printStackTrace();
+  				} catch (EmptyListException e1) {
+  					JOptionPane.showMessageDialog(null, "No se ha encontrado la lista.", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+  				} catch (java.lang.ArrayIndexOutOfBoundsException e1) {
+  					JOptionPane.showMessageDialog(null, "Debe seleccionar una casilla primero.", "¡ERROR!",
+  							JOptionPane.ERROR_MESSAGE);
+  				}
+
+        }
+    });
+    btnConcluirCita.setFont(new Font("SansSerif", Font.PLAIN, 12));
+    btnConcluirCita.setBounds(42, 382, 106, 23);
+    pnlAsignarCitas.add(btnConcluirCita);
+		
 		JLabel lblLogo_4 = new JLabel("\r\n");
 		lblLogo_4.setIcon(new ImageIcon("img\\ConsultaCitas.png"));
 		lblLogo_4.setBounds(280, 12, 50, 50);
@@ -469,6 +519,10 @@ public class PantallaFuncionario extends JFrame {
 					int cedula = Utilidad.cadenaAEntero(txtCedulaPaciente.getText());
 					String nombre = cbNombreTratamiento.getSelectedItem().toString();
 					String dosis = txtDosis.getText();
+					
+					int i=tableMisPacientes.getSelectedRow();
+					int id=Utilidad.cadenaAEntero(modeloMisPacientes.getValueAt(i, 0).toString());
+					FuncionarioControler.agregarTratamientoCita(nombre,id);
 
 					FuncionarioControler.agregarTratamientoPaciente(cedula, nombre, dosis);
 					JOptionPane.showMessageDialog(null, "¡El diagnostico ha sido registrado!", "¡Diagnostico Registrado!",
@@ -480,6 +534,9 @@ public class PantallaFuncionario extends JFrame {
 					JOptionPane.showMessageDialog(null, "¡No se ha agregado el tratamiento!", "¡Error!",
 							JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
+				}catch (java.lang.ArrayIndexOutOfBoundsException e1) {
+					JOptionPane.showMessageDialog(null, "Debe seleccionar la cita que esta atendiendo en la seccion 'Asignar Cita'.", "¡ERROR!",
+							JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
@@ -733,9 +790,11 @@ public class PantallaFuncionario extends JFrame {
 				int area= cbEspecialidad.getSelectedIndex()+1;
 
 				try {
+					
 					String nombre=txtNombrePacienteConsultaC.getText();
 					String estado= cbEstado.getSelectedItem().toString();
-				
+					Utilidad.validarRangoMinimo(nombre,0);
+
 					int anno1 = Utilidad.cadenaAEntero(txtAnnoConsultaC.getText());
 					int mes1 = Utilidad.cadenaAEntero(txtMesConsultaC.getText());
 					int dia1 = Utilidad.cadenaAEntero(txtDiaConsultaC.getText());
@@ -771,6 +830,8 @@ public class PantallaFuncionario extends JFrame {
 				} catch (IsDigitNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "En la fecha solamente se pueden ingresar digitos", "¡ERROR!",
 							JOptionPane.ERROR_MESSAGE);
+				} catch (ValidarRangoNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "Debe ingresar el nombre del paciente", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -918,7 +979,8 @@ public class PantallaFuncionario extends JFrame {
 					String nombre=txtNombrePacienteConsultaD.getText();
 					String diagnostico= cbNombreDiagnosticoConsulta.getSelectedItem().toString();
 					String nivel= cbNivelDiagnosticoConsulta.getSelectedItem().toString();
-				
+					Utilidad.validarRangoMinimo(nombre,0);
+
 					int anno1 = Utilidad.cadenaAEntero(txtAnnoConsultaD.getText());
 					int mes1 = Utilidad.cadenaAEntero(txtMesConsultaD.getText());
 					int dia1 = Utilidad.cadenaAEntero(txtDiaConsultaD.getText());
@@ -944,6 +1006,8 @@ public class PantallaFuncionario extends JFrame {
 				} catch (IsDigitNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "En la fecha solamente se pueden ingresar digitos", "¡ERROR!",
 							JOptionPane.ERROR_MESSAGE);
+				} catch (ValidarRangoNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "Debe escribir el nombre del paciente", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -959,7 +1023,8 @@ public class PantallaFuncionario extends JFrame {
 					String nombre=txtNombrePacienteConsultaD.getText();
 					String diagnostico= cbNombreDiagnosticoConsulta.getSelectedItem().toString();
 					String nivel= cbNivelDiagnosticoConsulta.getSelectedItem().toString();
-				
+					Utilidad.validarRangoMinimo(nombre,0);
+
 					int anno1 = Utilidad.cadenaAEntero(txtAnnoConsultaD.getText());
 					int mes1 = Utilidad.cadenaAEntero(txtMesConsultaD.getText());
 					int dia1 = Utilidad.cadenaAEntero(txtDiaConsultaD.getText());
@@ -995,6 +1060,8 @@ public class PantallaFuncionario extends JFrame {
 				} catch (IsDigitNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "En la fecha solamente se pueden ingresar digitos", "¡ERROR!",
 							JOptionPane.ERROR_MESSAGE);
+				} catch (ValidarRangoNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "Debe ingresar el nombre del usuario", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 				}
 				
 				
@@ -1064,60 +1131,69 @@ public class PantallaFuncionario extends JFrame {
 		lblGuiaFechaConsultaT2.setBounds(500, 390, 220, 14);
 		pnlTratamientoConsulta.add(lblGuiaFechaConsultaT2);
 
-		txtNombrePacienteC = new JTextField();
-		txtNombrePacienteC.setBounds(500, 120, 220, 20);
-		pnlTratamientoConsulta.add(txtNombrePacienteC);
-		txtNombrePacienteC.setColumns(10);
+		txtNombrePacienteCT = new JTextField();
+		txtNombrePacienteCT.setBounds(500, 120, 220, 20);
+		pnlTratamientoConsulta.add(txtNombrePacienteCT);
+		txtNombrePacienteCT.setColumns(10);
 
-		txtDiaConsulta = new JTextField();
-		txtDiaConsulta.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtDiaConsulta.setColumns(10);
-		txtDiaConsulta.setBounds(550, 290, 30, 20);
-		pnlTratamientoConsulta.add(txtDiaConsulta);
+		txtDiaConsultaT = new JTextField();
+		txtDiaConsultaT.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtDiaConsultaT.setColumns(10);
+		txtDiaConsultaT.setBounds(550, 290, 30, 20);
+		pnlTratamientoConsulta.add(txtDiaConsultaT);
 
-		txtMesConsulta = new JTextField();
-		txtMesConsulta.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtMesConsulta.setColumns(10);
-		txtMesConsulta.setBounds(600, 290, 30, 20);
-		pnlTratamientoConsulta.add(txtMesConsulta);
+		txtMesConsultaT = new JTextField();
+		txtMesConsultaT.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtMesConsultaT.setColumns(10);
+		txtMesConsultaT.setBounds(600, 290, 30, 20);
+		pnlTratamientoConsulta.add(txtMesConsultaT);
 
-		txtAnnoConsulta = new JTextField();
-		txtAnnoConsulta.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtAnnoConsulta.setColumns(10);
-		txtAnnoConsulta.setBounds(650, 290, 40, 20);
-		pnlTratamientoConsulta.add(txtAnnoConsulta);
+		txtAnnoConsultaT = new JTextField();
+		txtAnnoConsultaT.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtAnnoConsultaT.setColumns(10);
+		txtAnnoConsultaT.setBounds(650, 290, 40, 20);
+		pnlTratamientoConsulta.add(txtAnnoConsultaT);
 
-		txtDiaConsulta2 = new JTextField();
-		txtDiaConsulta2.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtDiaConsulta2.setColumns(10);
-		txtDiaConsulta2.setBounds(550, 360, 30, 20);
-		pnlTratamientoConsulta.add(txtDiaConsulta2);
+		txtDiaConsulta2T = new JTextField();
+		txtDiaConsulta2T.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtDiaConsulta2T.setColumns(10);
+		txtDiaConsulta2T.setBounds(550, 360, 30, 20);
+		pnlTratamientoConsulta.add(txtDiaConsulta2T);
 
-		txtMesConsulta2 = new JTextField();
-		txtMesConsulta2.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtMesConsulta2.setColumns(10);
-		txtMesConsulta2.setBounds(600, 360, 30, 20);
-		pnlTratamientoConsulta.add(txtMesConsulta2);
+		txtMesConsulta2T = new JTextField();
+		txtMesConsulta2T.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtMesConsulta2T.setColumns(10);
+		txtMesConsulta2T.setBounds(600, 360, 30, 20);
+		pnlTratamientoConsulta.add(txtMesConsulta2T);
 
-		txtAnnoConsulta2 = new JTextField();
-		txtAnnoConsulta2.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtAnnoConsulta2.setColumns(10);
-		txtAnnoConsulta2.setBounds(650, 360, 40, 20);
-		pnlTratamientoConsulta.add(txtAnnoConsulta2);
+		txtAnnoConsulta2T = new JTextField();
+		txtAnnoConsulta2T.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtAnnoConsulta2T.setColumns(10);
+		txtAnnoConsulta2T.setBounds(650, 360, 40, 20);
+		pnlTratamientoConsulta.add(txtAnnoConsulta2T);
 
 		cbNombreTratamientoC = new JComboBox();
 		cbNombreTratamientoC.setBounds(500, 180, 220, 22);
+		cbNombreTratamientoC.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+					cbTipoTratamientoC.removeAllItems();
+					cbTipoTratamientoC.addItem(listaTratamientos.get(cbNombreTratamientoC.getSelectedIndex()).getTipo());
+				
+				
+			}
+		});
 		pnlTratamientoConsulta.add(cbNombreTratamientoC);
 
 		cbTipoTratamientoC = new JComboBox();
 		cbTipoTratamientoC.setBounds(500, 240, 220, 22);
+		cbTipoTratamientoC.setEnabled(false);
 		pnlTratamientoConsulta.add(cbTipoTratamientoC);
 
 		JScrollPane spTratamientoConsulta = new JScrollPane();
 		spTratamientoConsulta.setBounds(10, 82, 451, 330);
 		pnlTratamientoConsulta.add(spTratamientoConsulta);
 
-		String[] colTratamientoConsulta = new String[] { "Paciente", "Diagnóstico", "Nombre", "Tipo", "Fecha" };
+		String[] colTratamientoConsulta = new String[] { "Paciente", "Diagnóstico", "Tipo", "Dosis" };
 		modeloTratamientoConsulta = new DefaultTableModel(colTratamientoConsulta, 0);
 
 		tableTratamientoConsulta = new JTable(modeloTratamientoConsulta);
@@ -1127,6 +1203,43 @@ public class PantallaFuncionario extends JFrame {
 		JButton btnConsultarTratamiendo = new JButton("Consultar Tratamiendo Asociados");
 		btnConsultarTratamiendo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				try {
+					String nombre=txtNombrePacienteCT.getText();
+					String tratamiento= cbNombreTratamientoC.getSelectedItem().toString();
+					String tipo= cbTipoTratamientoC.getSelectedItem().toString();
+					Utilidad.validarRangoMinimo(nombre,0);
+
+					int anno1 = Utilidad.cadenaAEntero(txtAnnoConsultaT.getText());
+					int mes1 = Utilidad.cadenaAEntero(txtMesConsultaT.getText());
+					int dia1 = Utilidad.cadenaAEntero(txtDiaConsultaT.getText());
+
+					int anno2 = Utilidad.cadenaAEntero(txtAnnoConsulta2T.getText());
+					int mes2 = Utilidad.cadenaAEntero(txtMesConsulta2T.getText());
+					int dia2 = Utilidad.cadenaAEntero(txtDiaConsulta2T.getText());
+
+					java.util.Date f1 = new java.util.Date(anno1 - 1900, mes1 - 1, dia1);
+					Date sqlDate1 = new Date(f1.getTime());
+
+					java.util.Date f2 = new java.util.Date(anno2 - 1900, mes2 - 1, dia2);
+					Date sqlDate2 = new Date(f2.getTime());
+					
+					listaTratamientos=FuncionarioControler.consultarTratamiento(nombre, tratamiento, tipo, sqlDate1, sqlDate2);
+					setModeloTablaTratamiento(listaTratamientos);
+								
+				} catch (SQLException e1) {
+					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				} catch (EmptyListException e1) {
+					JOptionPane.showMessageDialog(null, "No se han encontrado tratamientos", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (IsDigitNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "En la fecha solamente se pueden ingresar digitos", "¡ERROR!",
+							JOptionPane.ERROR_MESSAGE);
+				} catch (ValidarRangoNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "Debe ingresar el nombre del ususario", "¡ERROR!",
+							JOptionPane.ERROR_MESSAGE);				
+				}
+				
 			}
 		});
 		btnConsultarTratamiendo.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -1136,6 +1249,61 @@ public class PantallaFuncionario extends JFrame {
 		JButton btnConsultarTratamientoCantidad = new JButton("Consultar Cantidad de Tratamiento");
 		btnConsultarTratamientoCantidad.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				try {
+					String nombre=txtNombrePacienteCT.getText();
+					String tratamiento= cbNombreTratamientoC.getSelectedItem().toString();
+					String tipo= cbTipoTratamientoC.getSelectedItem().toString();
+					Utilidad.validarRangoMinimo(nombre,0);
+
+					int anno1 = Utilidad.cadenaAEntero(txtAnnoConsultaT.getText());
+					int mes1 = Utilidad.cadenaAEntero(txtMesConsultaT.getText());
+					int dia1 = Utilidad.cadenaAEntero(txtDiaConsultaT.getText());
+
+					int anno2 = Utilidad.cadenaAEntero(txtAnnoConsulta2T.getText());
+					int mes2 = Utilidad.cadenaAEntero(txtMesConsulta2T.getText());
+					int dia2 = Utilidad.cadenaAEntero(txtDiaConsulta2T.getText());
+
+					java.util.Date f1 = new java.util.Date(anno1 - 1900, mes1 - 1, dia1);
+					Date sqlDate1 = new Date(f1.getTime());
+
+					java.util.Date f2 = new java.util.Date(anno2 - 1900, mes2 - 1, dia2);
+					Date sqlDate2 = new Date(f2.getTime());
+					
+					
+					listaTratamientos=FuncionarioControler.consultarTratamientos();
+					int total=listaTratamientos.size();
+					listaTratamientos=FuncionarioControler.consultarTratamientos(tratamiento);
+					int tratamientosNombre=listaTratamientos.size();
+					listaTratamientos=FuncionarioControler.consultarTratamiento(nombre, tratamiento, tipo, sqlDate1, sqlDate2);
+					
+					String mensaje="En el sistema existe un total de "+total+" tratamientos.\n"+
+							"Aplicando el nombre se han encontrado "+tratamientosNombre+" diagnosticos.\n"+
+							"Aplicando el filtro se han encontrado "+listaTratamientos.size()+" diagnosticos.";
+					
+					
+					JOptionPane.showMessageDialog(null, mensaje,"Reporte de Cantidad de Citas", JOptionPane.INFORMATION_MESSAGE);
+					
+								
+				} catch (SQLException e1) {
+					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				} catch (EmptyListException e1) {
+					JOptionPane.showMessageDialog(null, "No se han encontrado tratamientos", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (IsDigitNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "En la fecha solamente se pueden ingresar digitos", "¡ERROR!",
+							JOptionPane.ERROR_MESSAGE);
+				}catch (java.lang.IndexOutOfBoundsException e1) {
+					try {
+						actualizarcb();
+					} catch (SQLException | EmptyListException e2) {
+						JOptionPane.showMessageDialog(null, "Error interno", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+					}
+				} catch (ValidarRangoNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "Debe ingresar el nombre del paciente", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+				}
+				
+				
 			}
 		});
 		btnConsultarTratamientoCantidad.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -1164,18 +1332,18 @@ public class PantallaFuncionario extends JFrame {
 		lblNombrePaciente.setBounds(86, 86, 159, 26);
 		pnlHospitalizacion.add(lblNombrePaciente);
 
-		txtNombrePaciente = new JTextField();
-		txtNombrePaciente.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtNombrePaciente.setBounds(87, 123, 210, 20);
-		pnlHospitalizacion.add(txtNombrePaciente);
-		txtNombrePaciente.setColumns(10);
+		txtNombrePacienteH = new JTextField();
+		txtNombrePacienteH.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtNombrePacienteH.setBounds(87, 123, 210, 20);
+		pnlHospitalizacion.add(txtNombrePacienteH);
+		txtNombrePacienteH.setColumns(10);
 
 		JScrollPane spHospitalizaciones = new JScrollPane();
 		spHospitalizaciones.setBounds(56, 172, 635, 265);
 		pnlHospitalizacion.add(spHospitalizaciones);
 
-		String[] colHospitalizacion = new String[] { "Identificación", "Nombre", "Diagnóstico", "Fecha Inicio",
-				"Fecha Finalizacion", "Especialidad" };
+		String[] colHospitalizacion = new String[] { "Identificación", "Diagnóstico", "Fecha Inicio",
+				"Fecha Finalizacion", "Especialidad","Hospitalizado por" };
 		modeloHospitalizaciones = new DefaultTableModel(colHospitalizacion, 0);
 		tableHospitalizaciones = new JTable(modeloHospitalizaciones);
 
@@ -1185,6 +1353,23 @@ public class PantallaFuncionario extends JFrame {
 		JButton btnConsultarHospitalizaciones = new JButton("Buscar");
 		btnConsultarHospitalizaciones.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				try {
+					String nombre=txtNombrePacienteH.getText();
+					Utilidad.validarRangoMinimo(nombre,0);
+					
+					listaHospitalizaciones=ReportesDB.consultarHospitalización(nombre);
+					setModeloTablaHospitalizaciones(listaHospitalizaciones);
+								
+				} catch (SQLException e1) {
+					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				} catch (EmptyListException e1) {
+					JOptionPane.showMessageDialog(null, "No se han encontrado tratamientos", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (ValidarRangoNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "Debe escribir el nombre del paciente", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				}
+				
 			}
 		});
 		btnConsultarHospitalizaciones.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -1200,9 +1385,18 @@ public class PantallaFuncionario extends JFrame {
 		btnSeguimiento.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					PantallaSeguimiento frame = new PantallaSeguimiento();
+					int i = tableHospitalizaciones.getSelectedRow();
+					
+					if(i==-1) {
+						JOptionPane.showMessageDialog(null, "Debe seleccionar la hospitalizacion primero", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					
+					int cedula = Utilidad.cadenaAEntero(tableHospitalizaciones.getModel().getValueAt(i, 0).toString());
+					PantallaSeguimiento frame = new PantallaSeguimiento(cedula);
 					frame.setVisible(true);
 				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
 				}
 			}
@@ -1227,14 +1421,20 @@ public class PantallaFuncionario extends JFrame {
 		btnGestionDyT.setBounds(10, 11, 42, 42);
 		contentPane.add(btnGestionDyT);
 
-		actualizarTablas();
-		actualizarcb();
+		
+		try {
+			actualizarcb();
+		} catch (SQLException | EmptyListException e1) {
+			JOptionPane.showMessageDialog(null, "Actualmente no hay tratamientos registrados", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+		}
 		asignarPrivilegios();
+		actualizarTablas();
 
 	}
 
-	private void actualizarcb() {
+	private void actualizarcb() throws SQLException, EmptyListException {
 		getDiagnosticos();
+		getAllTratamientos();
 		getAreas();
 	}
 
@@ -1289,6 +1489,25 @@ public class PantallaFuncionario extends JFrame {
 			Object[] objs = { diagnostico.getCedula(),diagnostico.getNombre(),diagnostico.getNivel(),diagnostico.getObservaciones()};
 			modeloDiagnosticoConsulta.addRow(objs);
 
+		}
+	}
+	
+	private void setModeloTablaHospitalizaciones(ArrayList<Hospitalizacion> lista) {
+		limpiarTabla(modeloHospitalizaciones);
+		for (Hospitalizacion hospitalizacion : lista) {
+			Object[] objs = { hospitalizacion.getCedula(),hospitalizacion.getDiagnostico(),
+					hospitalizacion.getFechaInicio(),hospitalizacion.getFechaFinal(),
+					hospitalizacion.getIdArea(),hospitalizacion.getIdentificacion()};
+			modeloHospitalizaciones.addRow(objs);
+
+		}
+	}
+	
+	private void setModeloTablaTratamiento(ArrayList<Tratamiento> lista) {
+		limpiarTabla(modeloTratamientoConsulta);
+		for (Tratamiento trat : lista) {
+			Object[] objs = { trat.getCedula(),trat.getNombre(),trat.getTipo(),trat.getDosis()};
+			modeloTratamientoConsulta.addRow(objs);
 		}
 	}
 
@@ -1355,6 +1574,14 @@ public class PantallaFuncionario extends JFrame {
 		cbNombreTratamientoC.removeAllItems();
 			for(Tratamiento tratamiento:listaTratamientos) {
 				cbNombreTratamiento.addItem(tratamiento.getNombre());
+				cbNombreTratamientoC.addItem(tratamiento.getNombre());
+			}
+	}
+	
+	private void getAllTratamientos() throws SQLException, EmptyListException {
+		cbNombreTratamientoC.removeAllItems();
+		listaTratamientos=FuncionesDB.consultarTratamiento();
+			for(Tratamiento tratamiento:listaTratamientos) {
 				cbNombreTratamientoC.addItem(tratamiento.getNombre());
 			}
 	}

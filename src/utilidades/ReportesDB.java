@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import excepciones.EmptyListException;
 import logicadenegocios.Cita;
+import logicadenegocios.Hospitalizacion;
 
 public class ReportesDB {
 	
@@ -22,6 +23,20 @@ public class ReportesDB {
 		ResultSet rs = preparedStmt.executeQuery(query);
 		
 		ArrayList<Cita> lista=FuncionesDB.ResultSetToArrayList(rs,"Cita");
+		return lista;
+	}
+	
+	public static ArrayList<Hospitalizacion> consultarHospitalización(String nombrePaciente) throws SQLException, EmptyListException {
+		Connection conn = ConexionMySQL.getConexion();
+
+		String query =  "SELECT * FROM Hospitalizacion JOIN Persona ON Persona.cedula=Hospitalizacion.cedula "+
+				 "WHERE Persona.nombre='"+nombrePaciente+"'";
+
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+		ResultSet rs = preparedStmt.executeQuery(query);
+		
+		ArrayList<Hospitalizacion> lista=FuncionesDB.ResultSetToArrayList(rs,"HospitalizacionReporte");
 		return lista;
 	}
 	

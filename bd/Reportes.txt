@@ -67,6 +67,8 @@ SELECT Cita.identificador, Cita.cedula, Cita.areaDeTrabajo, Cita.fecha FROM (Cit
 
 -- Lista de citas por nombre de paciente.
 SELECT Cita.identificador, Cita.cedula, Cita.areaDeTrabajo, Cita.fecha FROM (Cita INNER JOIN Persona ON Cita.cedula=Persona.cedula) Where Persona.nombre="Elodia";
+USE hospitaltec;
+SELECT * FROM (DiagnosticoPaciente INNER JOIN Persona ON DiagnosticoPaciente.cedula=Persona.cedula) Where Persona.nombre="MARIA";
 
 -- Lista con la información de los diagnósticos del paciente. 
 SELECT Diagnostico.nombre, Diagnostico.nivel, Diagnostico.observaciones, Cita.cedula, Cita.identificador FROM ((Diagnostico INNER JOIN DiagnosticoCita ON Diagnostico.nombre = DiagnosticoCita.nombre) INNER JOIN Cita ON Cita.identificador=DiagnosticoCita.identificador) WHERE Cita.cedula=104780154;

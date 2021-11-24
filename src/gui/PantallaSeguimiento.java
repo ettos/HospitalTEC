@@ -6,8 +6,21 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import controladores.FuncionarioControler;
+import excepciones.EmptyListException;
+import excepciones.IsDigitNotExistException;
+import excepciones.ValidarRangoNotExistException;
+import logicadenegocios.Tratamiento;
+import utilidades.FuncionesDB;
+import utilidades.UsuarioLogueado;
+import utilidades.Utilidad;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
+import java.awt.Window;
 import java.awt.Color;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
@@ -15,6 +28,9 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
 public class PantallaSeguimiento extends JFrame {
@@ -26,12 +42,16 @@ public class PantallaSeguimiento extends JFrame {
 	private JTextField txtAnno;
 	private JTextField txtObservaciones;
 	private JTextField txtFuncionario;
+	private int cedula;
+	private JComboBox cbNombreTratamiento;
+	private ArrayList<Tratamiento> listaTratamientos;
 
 
 	/**
 	 * Create the frame.
 	 */
-	public PantallaSeguimiento() {
+	public PantallaSeguimiento(int cedula) {
+		this.cedula=cedula;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 730, 480);
 		contentPane = new JPanel();
@@ -58,18 +78,19 @@ public class PantallaSeguimiento extends JFrame {
 		lblDosis.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		lblDosis.setBounds(348, 173, 160, 24);
 		contentPane.add(lblDosis);
-		
+		/*
 		JLabel lblTipoTratamiento = new JLabel("Tipo de Tratamiento:");
 		lblTipoTratamiento.setForeground(Color.decode("#0a1944"));
 		lblTipoTratamiento.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		lblTipoTratamiento.setBounds(348, 208, 160, 28);
 		contentPane.add(lblTipoTratamiento);
-		
+		*/
+		/*
 		JButton btnAsignarTratamiento = new JButton("Asignar Tratamiento");
 		btnAsignarTratamiento.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		btnAsignarTratamiento.setBounds(447, 252, 154, 23);
 		contentPane.add(btnAsignarTratamiento);
-		
+		*/
 		JLabel lblNewLabel = new JLabel("Seguimiento de la Hospitalizaci\u00F3n");
 		lblNewLabel.setForeground(Color.decode("#0a1944"));
 		lblNewLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
@@ -132,24 +153,64 @@ public class PantallaSeguimiento extends JFrame {
 		contentPane.add(txtAnno);
 		
 		txtFuncionario = new JTextField();
+		txtFuncionario.setText(UsuarioLogueado.getUsuarioLogueado().getIdentificacion()+"");
+		txtFuncionario.setEnabled(false);
 		txtFuncionario.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtFuncionario.setColumns(10);
 		txtFuncionario.setBounds(29, 334, 235, 20);
 		contentPane.add(txtFuncionario);
 		
-		JComboBox cbNombreTratamiento = new JComboBox();
+		cbNombreTratamiento = new JComboBox();
 		cbNombreTratamiento.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		cbNombreTratamiento.setBounds(515, 137, 170, 22);
 		contentPane.add(cbNombreTratamiento);
 		
+		/*
 		JComboBox cbTipoTratamiento = new JComboBox();
 		cbTipoTratamiento.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		cbTipoTratamiento.setBounds(515, 212, 170, 22);
 		contentPane.add(cbTipoTratamiento);
-		
+		*/
 		
 		JButton btnRegistrarSeguimiento = new JButton("Registrar Seguimiento");
 		btnRegistrarSeguimiento.setFont(new Font("SansSerif", Font.PLAIN, 13));
+		btnRegistrarSeguimiento.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Utilidad.validarRangoMinimo(txtObservaciones.getText(), 0);
+					Utilidad.validarRangoMinimo(txtDosis.getText(), 0);
+					Utilidad.validarRangoMinimo(txtDia.getText(), 0);
+					Utilidad.validarRangoMinimo(txtMes.getText(), 0);
+					Utilidad.validarRangoMinimo(txtAnno.getText(), 0);
+					
+					int anno1 = Utilidad.cadenaAEntero(txtAnno.getText());
+					int mes1 = Utilidad.cadenaAEntero(txtMes.getText());
+					int dia1 = Utilidad.cadenaAEntero(txtDia.getText());
+
+					java.util.Date f1 = new java.util.Date(anno1 - 1900, mes1 - 1, dia1);
+					Date sqlDate1 = new Date(f1.getTime());
+					
+					FuncionarioControler.agregarSeguimiento(cedula, txtObservaciones.getText(),
+							cbNombreTratamiento.getSelectedItem().toString(), sqlDate1, Utilidad.cadenaAEntero(txtFuncionario.getText()));
+					JOptionPane.showMessageDialog(null, "El seguimiento ha sido registrado.", "¡Seguimiento Registrado!", JOptionPane.INFORMATION_MESSAGE);
+
+					txtObservaciones.setText("");
+					txtDosis.setText("");
+					txtDia.setText("");
+					txtMes.setText("");
+					txtAnno.setText("");
+					
+					
+				} catch (ValidarRangoNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "No existen tratamientos en el sistema.", "¡Advertencia!", JOptionPane.WARNING_MESSAGE);
+				} catch (SQLException e1) {
+					JOptionPane.showMessageDialog(null, "No se ha podido registrar el seguimiento.", "¡Advertencia!", JOptionPane.WARNING_MESSAGE);
+					e1.printStackTrace();
+				} catch (IsDigitNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "La fecha solamente peude ser digitada en numeros.", "¡Advertencia!", JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
 		btnRegistrarSeguimiento.setBounds(278, 384, 170, 23);
 		contentPane.add(btnRegistrarSeguimiento);
 		
@@ -168,6 +229,21 @@ public class PantallaSeguimiento extends JFrame {
 		lblLogo.setIcon(new ImageIcon("img\\logoHospitalizacionOscuro.png"));
 		lblLogo.setBounds(164, 11, 50, 50);
 		contentPane.add(lblLogo);
+		
+		try {
+			getAllTratamientos();
+		} catch (SQLException | EmptyListException e1) {
+			JOptionPane.showMessageDialog(null, "No existen tratamientos en el sistema.", "¡Advertencia!", JOptionPane.WARNING_MESSAGE);
+		}
+	}
+	
+	
+	private void getAllTratamientos() throws SQLException, EmptyListException {
+		cbNombreTratamiento.removeAllItems();
+		listaTratamientos=FuncionesDB.consultarTratamiento();
+			for(Tratamiento tratamiento:listaTratamientos) {
+				cbNombreTratamiento.addItem(tratamiento.getNombre());
+			}
 	}
 
 }

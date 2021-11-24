@@ -11,6 +11,7 @@ import logicadenegocios.CentroDeAtencion;
 import logicadenegocios.Cita;
 import logicadenegocios.Diagnostico;
 import logicadenegocios.Funcionario;
+import logicadenegocios.Hospitalizacion;
 import logicadenegocios.Paciente;
 import logicadenegocios.Persona;
 import logicadenegocios.Tratamiento;
@@ -170,6 +171,32 @@ public class ResultsetToArrayList {
 
 			Tratamiento newTratamiento = new Tratamiento(rs.getString("nombre"),rs.getString("tipo"));
 			lista.add(newTratamiento);
+
+		}
+		return lista;
+	}
+	
+	public static ArrayList<Tratamiento> tTratamientoPaciente(ResultSet rs) throws SQLException {
+		ArrayList<Tratamiento> lista = new ArrayList<Tratamiento>();
+
+		while (rs.next()) {
+
+			Tratamiento newTratamiento = new Tratamiento(rs.getInt("cedula"),rs.getString("nombre"),rs.getString("dosis"),  rs.getString("tipo"));
+			lista.add(newTratamiento);
+
+		}
+		return lista;
+	}
+	
+	public static ArrayList<Hospitalizacion> tHospitalizacion(ResultSet rs) throws SQLException {
+		ArrayList<Hospitalizacion> lista = new ArrayList<Hospitalizacion>();
+
+		while (rs.next()) {
+
+			Hospitalizacion newHospitalizacion = new Hospitalizacion(rs.getInt("Hospitalizacion.codigoCentro"), rs.getInt("Hospitalizacion.cedula"),
+					rs.getString("Hospitalizacion.diagnostico"), rs.getDate("Hospitalizacion.fechaInicio"), rs.getDate("Hospitalizacion.fechaFinal"),
+					rs.getInt("Hospitalizacion.idArea"), rs.getInt("Hospitalizacion.identificacion"));
+			lista.add(newHospitalizacion);
 
 		}
 		return lista;

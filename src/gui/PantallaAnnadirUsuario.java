@@ -239,7 +239,7 @@ public class PantallaAnnadirUsuario extends JFrame {
 					String contraseña=txtContrasenna.getText();
 					String tipoSangre=txtTipoSangre.getText();
 					String nacionalidad=txtNacionalidad.getText();
-					String residencia=lblLugarResidencia.getText();
+					String residencia=textField.getText();
 					int telefono=Utilidad.cadenaAEntero(txtTelefono.getText());
 					
 					int anno=Utilidad.cadenaAEntero(textAnno.getText());
@@ -276,7 +276,7 @@ public class PantallaAnnadirUsuario extends JFrame {
 			}
 		});
 		btnDevolver.setForeground(Color.decode("#f6f7f2"));
-		btnDevolver.setIcon(new ImageIcon("J:\\Estudios\\Eclipse\\Proyecto Hospital TEC\\img\\logoSalir.png"));
+		btnDevolver.setIcon(new ImageIcon("img\\logoSalir.png"));
 		btnDevolver.setBounds(394, 11, 40, 40);
 		contentPane.add(btnDevolver);
 	}
@@ -305,7 +305,7 @@ public class PantallaAnnadirUsuario extends JFrame {
 		textApellido2.setText("");
 		txtTipoSangre.setText("");
 		txtNacionalidad.setText("");
-		lblLugarResidencia.setText("");
+		textField.setText("");
 		txtTelefono.setText("");
 		textAnno.setText("");
 		txtMes.setText("");

@@ -3,7 +3,6 @@ DROP DATABASE HospitalTec	;
 CREATE DATABASE HospitalTec	;
 USE HospitalTec; 
 
-SELECT * FROM Vacuna;
 
 CREATE TABLE CentroDeAtencion(
   codigoCentro int PRIMARY KEY,
@@ -91,6 +90,9 @@ CREATE TABLE Cita(
    descripcion varchar(100)
  );
  
+ SELECT * FROM Hospitalizacion JOIN Persona ON Persona.cedula=Hospitalizacion.cedula
+ WHERE Persona.nombre='MANUEL';
+ 
  CREATE TABLE Vacuna(
    cedula int, 
    fechaAplicacion DATE,
@@ -117,15 +119,6 @@ CREATE TABLE Tratamiento(
    FOREIGN KEY (cedula) REFERENCES Persona(cedula) ON DELETE CASCADE ON UPDATE CASCADE,
    FOREIGN KEY (nombre) REFERENCES Diagnostico(nombre) ON DELETE CASCADE ON UPDATE CASCADE
  );
-SELECT DiagnosticoPaciente.cedula, DiagnosticoPaciente.nombre,DiagnosticoPaciente.nivel,DiagnosticoPaciente.observaciones FROM 
-(((DiagnosticoPaciente JOIN DiagnosticoCita ON DiagnosticoPaciente.nombre=DiagnosticoCita.nombre) JOIN
-Cita ON Cita.identificador=DiagnosticoCita.identificador) JOIN
-Persona ON DiagnosticoPaciente.cedula=Persona.cedula) WHERE
- (Cita.fecha BETWEEN '2020/05/10' AND '2020/05/16') AND
- Persona.nombre='Manuel' AND
- DiagnosticoPaciente.nombre='' AND
- DiagnosticoPaciente.nivel='';
- 
 
 
 CREATE TABLE TratamientoPaciente(
@@ -136,6 +129,8 @@ CREATE TABLE TratamientoPaciente(
    FOREIGN KEY (nombre) REFERENCES Tratamiento(nombre) ON DELETE CASCADE ON UPDATE CASCADE
 
  );
+
+
 
  CREATE TABLE DiagnosticoTratamiento(
    nombreDiagnostico varchar (100), 
@@ -148,6 +143,13 @@ CREATE TABLE TratamientoPaciente(
    nombre varchar (100), 
    identificador int,
    FOREIGN KEY (nombre) REFERENCES Diagnostico(nombre) ON DELETE CASCADE ON UPDATE CASCADE,
+   FOREIGN KEY (identificador) REFERENCES Cita(identificador) ON DELETE CASCADE ON UPDATE CASCADE
+ );
+ 
+  CREATE TABLE TratamientoCita(
+   nombre varchar (100), 
+   identificador int,
+   FOREIGN KEY (nombre) REFERENCES Tratamiento(nombre) ON DELETE CASCADE ON UPDATE CASCADE,
    FOREIGN KEY (identificador) REFERENCES Cita(identificador) ON DELETE CASCADE ON UPDATE CASCADE
  );
  
@@ -166,7 +168,15 @@ CREATE TABLE TratamientoPaciente(
   FOREIGN KEY (identificacion) REFERENCES Funcionario(identificacion) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-
+CREATE TABLE Seguimiento(
+  cedula int,
+  observaciones varchar(100),
+  tratamiento varchar(50),
+  fecha Date,
+  identificacion int,
+  FOREIGN KEY (cedula) REFERENCES Persona(cedula) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (tratamiento) REFERENCES Tratamiento(nombre) ON DELETE CASCADE ON UPDATE CASCADE
+);
  
  -- Tabla intermedia -- 
 CREATE TABLE CentoDeAtencionAreaDeTrabajo(

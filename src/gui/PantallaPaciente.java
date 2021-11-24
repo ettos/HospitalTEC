@@ -251,7 +251,7 @@ public class PantallaPaciente extends JFrame {
 					Utilidad.compararFechas(sqlDate, new Date(new java.util.Date().getTime()));
 
 					PacienteControler.agregarCita(personaLog.getCedula(), cbEspecialidad.getSelectedIndex() + 1,
-							cbEspecialidad.getSelectedItem().toString(), txtObservaciones.getText(), sqlDate);
+							cbEspecialidad.getSelectedItem().toString(), txtObservaciones.getText(), sqlDate,txtCorreo.getText(),txtTelefono.getText());
 					JOptionPane.showMessageDialog(null, "La cita ha sido agregada satisfactoriamente", "¡CITA AGREGADA!",
 							JOptionPane.INFORMATION_MESSAGE);
 

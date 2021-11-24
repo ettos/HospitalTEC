@@ -1,5 +1,6 @@
 package logicadenegocios;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 public class Hospitalizacion {
@@ -7,12 +8,12 @@ public class Hospitalizacion {
 	private int codigoCentro;
 	private int cedula;
 	private String diagnostico;
-	private LocalDate fechaInicio;
-	private LocalDate fechaFinal;
+	private Date fechaInicio;
+	private Date fechaFinal;
 	private int idArea;
 	private int identificacion;
 	
-	public Hospitalizacion(int pCodigoCentro,int pCedula,String pDiagnostico,LocalDate fechaInicio, LocalDate fechaFinal,int pIdArea, int pIdentifiacion) {
+	public Hospitalizacion(int pCodigoCentro,int pCedula,String pDiagnostico,Date fechaInicio, Date fechaFinal,int pIdArea, int pIdentifiacion) {
 		setCedula(pCodigoCentro);
 		setCedula(pCedula);
 		setDiagnostico(pDiagnostico);
@@ -46,19 +47,19 @@ public class Hospitalizacion {
 		this.diagnostico = diagnostico;
 	}
 
-	public LocalDate getFechaInicio() {
+	public Date getFechaInicio() {
 		return fechaInicio;
 	}
 
-	public void setFechaInicio(LocalDate fechaInicio) {
+	public void setFechaInicio(Date fechaInicio) {
 		this.fechaInicio = fechaInicio;
 	}
 
-	public LocalDate getFechaFinal() {
+	public Date getFechaFinal() {
 		return fechaFinal;
 	}
 
-	public void setFechaFinal(LocalDate fechaFinal) {
+	public void setFechaFinal(Date fechaFinal) {
 		this.fechaFinal = fechaFinal;
 	}
 

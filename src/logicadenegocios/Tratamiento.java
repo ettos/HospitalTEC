@@ -7,7 +7,7 @@ public class Tratamiento {
 	private String tipo;
 
 	public Tratamiento(int pCedula, String pNombre, String pDosis, String pTipo) {
-		cedula = pCedula;
+		setCedula(pCedula);
 		nombre = pNombre;
 		dosis = pDosis;
 		tipo = pTipo;
@@ -48,6 +48,14 @@ public class Tratamiento {
 		cadena += "Dosis: " + dosis + "\n";
 		cadena += "Tipo: " + tipo + "\n";
 		return cadena;
+	}
+
+	public int getCedula() {
+		return cedula;
+	}
+
+	public void setCedula(int cedula) {
+		this.cedula = cedula;
 	}
 
 }

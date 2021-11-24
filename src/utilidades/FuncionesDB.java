@@ -182,6 +182,24 @@ public class FuncionesDB {
 	
 	}
 	
+	public static void agregarSeguimiento(int cedula,String observaciones, String tratamiento, String fecha,int identificacion) throws SQLException {
+		Connection conn = ConexionMySQL.getConexion();
+
+		String query = " INSERT INTO Seguimiento (cedula,observaciones,tratamiento,fecha,identificacion) VALUES (?,?,?,?,?)";
+
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+		preparedStmt.setInt(1,cedula);
+		preparedStmt.setString(2,observaciones);
+		preparedStmt.setString(3,tratamiento);
+		preparedStmt.setString(4,fecha);
+		preparedStmt.setInt(5,identificacion);
+		
+		preparedStmt.execute();
+
+	
+	}
+	
 	public static void agregarVacuna(int cedula, String fechaAplicacion,String nombreVacuna,String farmaceutica, int numeroLote) throws SQLException {
 		Connection conn = ConexionMySQL.getConexion();
 
@@ -256,6 +274,21 @@ public class FuncionesDB {
 		Connection conn = ConexionMySQL.getConexion();
 	
 		String query = " INSERT INTO DiagnosticoCita (nombre,identificador) VALUES (?,?)";
+	
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+	
+		preparedStmt.setString(1,nombre);
+		preparedStmt.setInt(2,id);
+		
+		preparedStmt.execute();
+	
+	
+	}
+	
+	public static void agregarTratamientoCita(String nombre, int id) throws SQLException {
+		Connection conn = ConexionMySQL.getConexion();
+	
+		String query = " INSERT INTO TratamientoCita (nombre,identificador) VALUES (?,?)";
 	
 		PreparedStatement preparedStmt = conn.prepareStatement(query);
 	
@@ -491,6 +524,56 @@ public class FuncionesDB {
 		return lista;
 	}
 	
+	public static ArrayList<Tratamiento> consultarTratamiento(String nombre, String tratamiento, String tipo, String fecha1,
+			String fecha2) throws SQLException, EmptyListException {
+		Connection conn = ConexionMySQL.getConexion();
+
+		String query="SELECT TratamientoPaciente.cedula,TratamientoPaciente.nombre,TratamientoPaciente.dosis,Tratamiento.tipo FROM  "
+				+ "((((TratamientoPaciente JOIN Tratamiento ON Tratamiento.nombre=TratamientoPaciente.nombre ) "
+				+ "JOIN TratamientoCita ON TratamientoCita.nombre=TratamientoPaciente.nombre)  "
+				+ "JOIN Cita ON TratamientoCita.identificador AND Cita.identificador) "
+				+ "JOIN Persona ON Persona.cedula=TratamientoPaciente.cedula) "
+				+ "WHERE "
+				+ "Persona.nombre='"+nombre+"' AND "
+				+ "TratamientoPaciente.nombre='"+tratamiento+"' AND "
+				+ "Tratamiento.tipo='"+tipo+"' AND "
+				+ "(Cita.fecha BETWEEN '"+fecha1+"' AND '"+fecha2+"')";
+
+
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+		ResultSet rs = preparedStmt.executeQuery(query);
+		
+		ArrayList<Tratamiento> lista=ResultSetToArrayList(rs,"TratamientoPaciente");
+		return lista;
+	}
+	
+	public static ArrayList<Tratamiento> consultarTratamiento() throws SQLException, EmptyListException {
+		Connection conn = ConexionMySQL.getConexion();
+	
+		String query = "SELECT * FROM Tratamiento";
+	
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+	
+		ResultSet rs = preparedStmt.executeQuery(query);
+		
+		ArrayList<Tratamiento> lista=ResultSetToArrayList(rs,"Tratamiento");
+		return lista;
+	}
+	
+	public static ArrayList<Tratamiento> consultarTratamiento(String nombre) throws SQLException, EmptyListException {
+		Connection conn = ConexionMySQL.getConexion();
+	
+		String query = "SELECT * FROM Tratamiento WHERE nombre='"+nombre+"'";
+	
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+	
+		ResultSet rs = preparedStmt.executeQuery(query);
+		
+		ArrayList<Tratamiento> lista=ResultSetToArrayList(rs,"Tratamiento");
+		return lista;
+	}
+
 	public static ArrayList<Tratamiento> consultarDiagnosticoTratamiento(String nombreDiagnostico) throws SQLException, EmptyListException {
 		Connection conn = ConexionMySQL.getConexion();
 
@@ -514,19 +597,6 @@ public class FuncionesDB {
 		ResultSet rs = preparedStmt.executeQuery(query);
 		
 		ArrayList<Diagnostico> lista=ResultSetToArrayList(rs,"DiagnosticoPaciente");
-		return lista;
-	}
-	
-	public static ArrayList<Tratamiento> consultarTratamiento() throws SQLException, EmptyListException {
-		Connection conn = ConexionMySQL.getConexion();
-
-		String query = "SELECT * FROM Tratamiento";
-
-		PreparedStatement preparedStmt = conn.prepareStatement(query);
-
-		ResultSet rs = preparedStmt.executeQuery(query);
-		
-		ArrayList<Tratamiento> lista=ResultSetToArrayList(rs,"Tratamiento");
 		return lista;
 	}
 	
@@ -576,6 +646,12 @@ public class FuncionesDB {
 				break;
 			case "Tratamiento":
 				lista=ResultsetToArrayList.tTratamiento(pResultSet);
+				break;
+			case "TratamientoPaciente":
+				lista=ResultsetToArrayList.tTratamientoPaciente(pResultSet);
+				break;
+			case "HospitalizacionReporte":
+				lista=ResultsetToArrayList.tHospitalizacion(pResultSet);
 				break;
 			default:
 				System.out.println("No hay caso");
