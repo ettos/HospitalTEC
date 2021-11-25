@@ -21,6 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import com.itextpdf.text.DocumentException;
+
 import controladores.FuncionarioControler;
 import controladores.PacienteControler;
 import excepciones.EmptyListException;
@@ -29,13 +31,17 @@ import excepciones.RangoFechaException;
 import excepciones.ValidarRangoNotExistException;
 import logicadenegocios.AreaDeTrabajo;
 import logicadenegocios.Cita;
+import logicadenegocios.Diagnostico;
+import logicadenegocios.Hospitalizacion;
 import logicadenegocios.Persona;
+import logicadenegocios.Tratamiento;
 import utilidades.FuncionesDB;
 import utilidades.ReportesDB;
 import utilidades.UsuarioLogueado;
 import utilidades.Utilidad;
 
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -71,8 +77,8 @@ public class PantallaPaciente extends JFrame {
 	private JTextField txtAnnoConsulta2;
 	private JTextField txtAnnoConsultaDiagnostico2;
 	private JTextField txtAnnoConsultaTratamiento2;
-	private JTextField txtNombreDiagnostico;
-	private JTextField txtNombreTratamiento;
+	private JComboBox cbNombreDiagnostico;
+	private JComboBox cbNombreTratamiento;
 	private JComboBox cbEspecialidad, cbHora, cnMinutos, cbEspecialidad_1, cbEstado, cbNivelDiagnostico,
 			cbTipoTratamiento;
 	private JTable tableDiagnostico;
@@ -90,6 +96,8 @@ public class PantallaPaciente extends JFrame {
 	private JTextField txtTelefono;
 	private JTextField txtCorreo;
 	private ArrayList<Cita> listaCitas;
+	private ArrayList<Diagnostico> listaDiagnosticos;
+	private ArrayList<Tratamiento> listaTratamientos;
 
 	/**
 	 * Create the frame.
@@ -107,7 +115,7 @@ public class PantallaPaciente extends JFrame {
 		contentPane.setLayout(null);
 
 		JLabel lblLogo = new JLabel("");
-		lblLogo.setIcon(new ImageIcon("\\img\\logoPaciente.png"));
+		lblLogo.setIcon(new ImageIcon("img\\logoPaciente.png"));
 		lblLogo.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		lblLogo.setBounds(163, 11, 50, 50);
 		contentPane.add(lblLogo);
@@ -430,6 +438,8 @@ public class PantallaPaciente extends JFrame {
 					if(txtAnnoConsulta.getText().length()== 0) {
 						actualizarTablas();
 						limpiarFechasConsulta();
+						ReportesDB.generarReporte("Cita",listaCitas);
+						JOptionPane.showMessageDialog(null, "Reporte Generado", "¡Exito!", JOptionPane.INFORMATION_MESSAGE);
 						return;
 					}
 					
@@ -454,6 +464,8 @@ public class PantallaPaciente extends JFrame {
 					listaCitas = PacienteControler.consultarCitaRangoFechas(cedula, areaDeTrabajo, estado, sqlDate1, sqlDate2);
 					limpiarFechasConsulta();
 					setModeloTablaCitas(listaCitas);
+					ReportesDB.generarReporte("Cita",listaCitas);
+					JOptionPane.showMessageDialog(null, "Reporte Generado", "¡Exito!", JOptionPane.INFORMATION_MESSAGE);
 					
 				} catch (IsDigitNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "En la fecha solamente se pueden ingresar digitos", "¡ERROR!",
@@ -465,6 +477,10 @@ public class PantallaPaciente extends JFrame {
 					e1.printStackTrace();
 				} catch (EmptyListException e1) {
 					JOptionPane.showMessageDialog(null, "No se han encontrado citas", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
@@ -524,10 +540,6 @@ public class PantallaPaciente extends JFrame {
 		lblLogoConsultarCitas.setIcon(new ImageIcon("img\\ConsultaCitas.png"));
 		lblLogoConsultarCitas.setBounds(165, 11, 50, 50);
 		pnlConsultarCitas.add(lblLogoConsultarCitas);
-		
-		JButton btnReporteC = new JButton("Reporte");
-		btnReporteC.setBounds(45, 359, 89, 23);
-		pnlConsultarCitas.add(btnReporteC);
 
 		JPanel pnlDiagnosticos = new JPanel();
 		pnlDiagnosticos.setBackground(Color.decode("#a5b5c4"));
@@ -612,13 +624,13 @@ public class PantallaPaciente extends JFrame {
 		txtAnnoConsultaDiagnostico2.setBounds(125, 270, 40, 20);
 		pnlDiagnosticos.add(txtAnnoConsultaDiagnostico2);
 
-		txtNombreDiagnostico = new JTextField();
-		txtNombreDiagnostico.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtNombreDiagnostico.setBounds(30, 101, 149, 20);
-		pnlDiagnosticos.add(txtNombreDiagnostico);
-		txtNombreDiagnostico.setColumns(10);
+		cbNombreDiagnostico = new JComboBox();
+		cbNombreDiagnostico.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		cbNombreDiagnostico.setBounds(30, 101, 149, 20);
+		pnlDiagnosticos.add(cbNombreDiagnostico);
 
-		cbNivelDiagnostico = new JComboBox();
+		String[] nivelesD = { "leve", "grave", "muy grave" };
+		cbNivelDiagnostico = new JComboBox(nivelesD);
 		cbNivelDiagnostico.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		cbNivelDiagnostico.setBounds(30, 150, 149, 22);
 		pnlDiagnosticos.add(cbNivelDiagnostico);
@@ -627,8 +639,8 @@ public class PantallaPaciente extends JFrame {
 		spDiagnosticos.setBounds(207, 73, 357, 290);
 		pnlDiagnosticos.add(spDiagnosticos);
 
-		String[] colDiagnostico = new String[] { "Nombre", "Nivel", "Fecha" };
-		modeloDiagnostico = new DefaultTableModel(colDiagnostico, 0);
+		String[] colDiagnosticoConsulta = new String[] { "Paciente", "Nombre", "Nivel","Observaciones" };
+		modeloDiagnostico = new DefaultTableModel(colDiagnosticoConsulta, 0);
 		tableDiagnostico = new JTable(modeloDiagnostico);
 
 		spDiagnosticos.setViewportView(tableDiagnostico);
@@ -636,6 +648,42 @@ public class PantallaPaciente extends JFrame {
 		JButton btnConsultarDiagnostico = new JButton("Consultar");
 		btnConsultarDiagnostico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					String diagnostico= cbNombreDiagnostico.getSelectedItem().toString();
+					String nivel= cbNivelDiagnostico.getSelectedItem().toString();
+
+					int anno1 = Utilidad.cadenaAEntero(txtAnnoConsultaDiagnostico.getText());
+					int mes1 = Utilidad.cadenaAEntero(txtMesConsultaDiagnostico.getText());
+					int dia1 = Utilidad.cadenaAEntero(txtDiaConsultaDiagnostico.getText());
+
+					int anno2 = Utilidad.cadenaAEntero(txtAnnoConsultaDiagnostico2.getText());
+					int mes2 = Utilidad.cadenaAEntero(txtMesConsultaDiagnostico2.getText());
+					int dia2 = Utilidad.cadenaAEntero(txtDiaConsultaDiagnostico2.getText());
+
+					java.util.Date f1 = new java.util.Date(anno1 - 1900, mes1 - 1, dia1);
+					Date sqlDate1 = new Date(f1.getTime());
+
+					java.util.Date f2 = new java.util.Date(anno2 - 1900, mes2 - 1, dia2);
+					Date sqlDate2 = new Date(f2.getTime());
+					
+					listaDiagnosticos=PacienteControler.consultarDiagnostico(UsuarioLogueado.getUsuarioLogueado().getCedula(), diagnostico, nivel, sqlDate1, sqlDate2);
+					setModeloTablaDiagnosticos(listaDiagnosticos);
+					ReportesDB.generarReporte("Diagnostico",listaDiagnosticos);
+					JOptionPane.showMessageDialog(null, "Reporte Generado", "¡ERROR!", JOptionPane.INFORMATION_MESSAGE);
+								
+				} catch (SQLException e1) {
+					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				} catch (EmptyListException e1) {
+					JOptionPane.showMessageDialog(null, "No se han encontrado diagnosticos", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (IsDigitNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "En la fecha solamente se pueden ingresar digitos", "¡ERROR!",
+							JOptionPane.ERROR_MESSAGE);
+				}catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		btnConsultarDiagnostico.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -646,10 +694,7 @@ public class PantallaPaciente extends JFrame {
 		lblLogoDiagnostico.setIcon(new ImageIcon("img\\logoDiagnostico.png"));
 		lblLogoDiagnostico.setBounds(189, 11, 50, 50);
 		pnlDiagnosticos.add(lblLogoDiagnostico);
-		
-		JButton btnReporteD = new JButton("Reporte");
-		btnReporteD.setBounds(50, 359, 89, 23);
-		pnlDiagnosticos.add(btnReporteD);
+
 
 		JPanel pnlTratamientos = new JPanel();
 		pnlTratamientos.setBackground(Color.decode("#3c4f6d"));
@@ -668,11 +713,6 @@ public class PantallaPaciente extends JFrame {
 		lblNombreTratamiento.setBounds(10, 80, 183, 14);
 		pnlTratamientos.add(lblNombreTratamiento);
 
-		JLabel lblTipoTratamiento = new JLabel("Tipo de Tratamiento:");
-		lblTipoTratamiento.setForeground(new Color(255, 255, 255));
-		lblTipoTratamiento.setFont(new Font("SansSerif", Font.PLAIN, 16));
-		lblTipoTratamiento.setBounds(10, 136, 183, 20);
-		pnlTratamientos.add(lblTipoTratamiento);
 
 		JLabel lblFechaConsultaTratamiento = new JLabel("Fecha: ");
 		lblFechaConsultaTratamiento.setForeground(new Color(255, 255, 255));
@@ -700,11 +740,10 @@ public class PantallaPaciente extends JFrame {
 		lblGuiaFechaConsultaTratamiento2.setBounds(7, 305, 159, 14);
 		pnlTratamientos.add(lblGuiaFechaConsultaTratamiento2);
 
-		txtNombreTratamiento = new JTextField();
-		txtNombreTratamiento.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtNombreTratamiento.setBounds(20, 105, 159, 20);
-		pnlTratamientos.add(txtNombreTratamiento);
-		txtNombreTratamiento.setColumns(10);
+		cbNombreTratamiento = new JComboBox();
+		cbNombreTratamiento.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		cbNombreTratamiento.setBounds(20, 105, 159, 20);
+		pnlTratamientos.add(cbNombreTratamiento);
 
 		txtDiaConsultaTratamiento = new JTextField();
 		txtDiaConsultaTratamiento.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -742,14 +781,46 @@ public class PantallaPaciente extends JFrame {
 		txtAnnoConsultaTratamiento2.setBounds(125, 280, 40, 20);
 		pnlTratamientos.add(txtAnnoConsultaTratamiento2);
 
-		cbTipoTratamiento = new JComboBox();
-		cbTipoTratamiento.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		cbTipoTratamiento.setBounds(20, 165, 159, 22);
-		pnlTratamientos.add(cbTipoTratamiento);
-
 		JButton btnConsultarTratamientos = new JButton("Consultar");
 		btnConsultarTratamientos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					String tratamiento= cbNombreTratamiento.getSelectedItem().toString();
+
+					int anno1 = Utilidad.cadenaAEntero(txtAnnoConsultaTratamiento.getText());
+					int mes1 = Utilidad.cadenaAEntero(txtMesConsultaTratamiento.getText());
+					int dia1 = Utilidad.cadenaAEntero(txtDiaConsultaTratamiento.getText());
+
+					int anno2 = Utilidad.cadenaAEntero(txtAnnoConsultaTratamiento2.getText());
+					int mes2 = Utilidad.cadenaAEntero(txtMesConsultaTratamiento2.getText());
+					int dia2 = Utilidad.cadenaAEntero(txtDiaConsultaTratamiento2.getText());
+
+					java.util.Date f1 = new java.util.Date(anno1 - 1900, mes1 - 1, dia1);
+					Date sqlDate1 = new Date(f1.getTime());
+
+					java.util.Date f2 = new java.util.Date(anno2 - 1900, mes2 - 1, dia2);
+					Date sqlDate2 = new Date(f2.getTime());
+					
+					listaTratamientos=PacienteControler.consultarTratamiento(UsuarioLogueado.getUsuarioLogueado().getCedula(), tratamiento, sqlDate1, sqlDate2);
+					setModeloTablaTratamiento(listaTratamientos);
+					
+					ReportesDB.generarReporte("Tratamiento",listaTratamientos);
+					JOptionPane.showMessageDialog(null, "Reporte Generado", "¡ERROR!", JOptionPane.INFORMATION_MESSAGE);
+								
+				} catch (SQLException e1) {
+					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				} catch (EmptyListException e1) {
+					JOptionPane.showMessageDialog(null, "No se han encontrado tratamientos", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (IsDigitNotExistException e1) {
+					JOptionPane.showMessageDialog(null, "En la fecha solamente se pueden ingresar digitos", "¡ERROR!",
+							JOptionPane.ERROR_MESSAGE);
+				} catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+				}
+				
 			}
 		});
 		btnConsultarTratamientos.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -760,8 +831,8 @@ public class PantallaPaciente extends JFrame {
 		spTratamientos.setBounds(204, 76, 351, 295);
 		pnlTratamientos.add(spTratamientos);
 
-		String[] colTratamientos = new String[] { "Nombre", "Tipo de Tratamiento", "Fecha" };
-		modeloTratamientos = new DefaultTableModel(colTratamientos, 0);
+		String[] colTratamientoConsulta = new String[] { "Paciente", "Diagnóstico", "Tipo", "Dosis" };
+		modeloTratamientos = new DefaultTableModel(colTratamientoConsulta, 0);
 		tableTratamientos = new JTable(modeloTratamientos);
 
 		tableTratamientos.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -771,10 +842,6 @@ public class PantallaPaciente extends JFrame {
 		lblLogoTratamiento.setIcon(new ImageIcon("img\\logoTratamiento.png"));
 		lblLogoTratamiento.setBounds(204, 11, 50, 50);
 		pnlTratamientos.add(lblLogoTratamiento);
-		
-		JButton btnReporteT = new JButton("Reporte");
-		btnReporteT.setBounds(45, 359, 89, 23);
-		pnlTratamientos.add(btnReporteT);
 
 		JPanel pnlHospitalizaciones = new JPanel();
 		pnlHospitalizaciones.setBackground(Color.decode("#0a1944"));
@@ -790,10 +857,10 @@ public class PantallaPaciente extends JFrame {
 		JScrollPane spHospitalizaciones = new JScrollPane();
 		spHospitalizaciones.setBounds(10, 77, 559, 235);
 		pnlHospitalizaciones.add(spHospitalizaciones);
-
-		String[] colHospitalizaciones = new String[] { "Fecha de Inicio", "Fecha de Finalización", "Especialidad",
-				"Funcionario Encargado" };
-		modeloHospitalizaciones = new DefaultTableModel(colTratamientos, 0);
+		
+		String[] colHospitalizacion = new String[] { "Identificación", "Diagnóstico", "Fecha Inicio",
+				"Fecha Finalizacion", "Especialidad","Hospitalizado por" };
+		modeloHospitalizaciones = new DefaultTableModel(colHospitalizacion, 0);
 		tableHospitalizaciones = new JTable(modeloHospitalizaciones);
 
 		tableHospitalizaciones.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -806,19 +873,48 @@ public class PantallaPaciente extends JFrame {
 
 		JButton btnConsultarHospitalizaciones = new JButton("Buscar");
 		btnConsultarHospitalizaciones.addActionListener(new ActionListener() {
+			private ArrayList<Hospitalizacion> listaHospitalizaciones;
+
 			public void actionPerformed(ActionEvent e) {
+				try {
+					
+					listaHospitalizaciones=ReportesDB.consultarHospitalización(UsuarioLogueado.getUsuarioLogueado().getCedula());
+					setModeloTablaHospitalizaciones(listaHospitalizaciones);
+					ReportesDB.generarReporte("Hospitalizacion",listaHospitalizaciones);
+					JOptionPane.showMessageDialog(null, "Reporte Generado", "¡ERROR!", JOptionPane.INFORMATION_MESSAGE);			
+					
+				} catch (SQLException e1) {
+					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				} catch (EmptyListException e1) {
+					JOptionPane.showMessageDialog(null, "No se han encontrado tratamientos", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Error interno en la carpeta del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error interno en la carpeta del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				}
+				
 			}
+				
+			
 		});
 		btnConsultarHospitalizaciones.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		btnConsultarHospitalizaciones.setBounds(239, 335, 89, 23);
 		pnlHospitalizaciones.add(btnConsultarHospitalizaciones);
-		
-		JButton btnReporteH = new JButton("Reporte");
-		btnReporteH.setBounds(480, 336, 89, 23);
-		pnlHospitalizaciones.add(btnReporteH);
 
 		actualizarTablas();
-
+		try {
+			actualizarcb();
+		} catch (SQLException e1) {
+			JOptionPane.showMessageDialog(null, "No existen dianosticos o Tratamientos en el sistema", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+		} catch (EmptyListException e1) {
+			JOptionPane.showMessageDialog(null, "No existen dianosticos o Tratamientos en el sistema", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private void actualizarcb() throws SQLException, EmptyListException {
+		getDiagnosticos();
+		getAllTratamientos();
 	}
 
 	private void getAreas(JComboBox cb) {
@@ -883,6 +979,17 @@ public class PantallaPaciente extends JFrame {
 
 		}
 	}
+	
+	private void setModeloTablaHospitalizaciones(ArrayList<Hospitalizacion> lista) {
+		limpiarTabla(modeloHospitalizaciones);
+		for (Hospitalizacion hospitalizacion : lista) {
+			Object[] objs = { hospitalizacion.getCedula(),hospitalizacion.getDiagnostico(),
+					hospitalizacion.getFechaInicio(),hospitalizacion.getFechaFinal(),
+					hospitalizacion.getIdArea(),hospitalizacion.getIdentificacion()};
+			modeloHospitalizaciones.addRow(objs);
+
+		}
+	}
 
 	private void limpiarTabla(DefaultTableModel modelo) {
 		while (modelo.getRowCount() > 0) {
@@ -897,6 +1004,49 @@ public class PantallaPaciente extends JFrame {
 		txtAnnoConsulta2.setText("");
 		txtMesConsulta2.setText("");
 		txtDiaConsulta2.setText("");
+	}
+	
+	private void getDiagnosticos() {
+		cbNombreDiagnostico.removeAllItems();
+		cbNombreDiagnostico.removeAllItems();
+		try {
+			listaDiagnosticos = FuncionesDB.consultarDiagnostico();
+			for (Diagnostico diagnostico : listaDiagnosticos) {
+				cbNombreDiagnostico.addItem(diagnostico.getNombre());
+
+			}
+
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Error Interno SQL", "¡Error!", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		} catch (EmptyListException e) {
+			JOptionPane.showMessageDialog(null, "No existen Diagnosticos", "¡Advertencia!", JOptionPane.WARNING_MESSAGE);
+		}
+	}
+	
+	private void getAllTratamientos() throws SQLException, EmptyListException {
+		cbNombreTratamiento.removeAllItems();
+		listaTratamientos=FuncionesDB.consultarTratamiento();
+			for(Tratamiento tratamiento:listaTratamientos) {
+				cbNombreTratamiento.addItem(tratamiento.getNombre());
+			}
+	}
+	
+	private void setModeloTablaDiagnosticos(ArrayList<Diagnostico> lista) {
+		limpiarTabla(modeloDiagnostico);
+		for (Diagnostico diagnostico : lista) {
+			Object[] objs = { diagnostico.getCedula(),diagnostico.getNombre(),diagnostico.getNivel(),diagnostico.getObservaciones()};
+			modeloDiagnostico.addRow(objs);
+
+		}
+	}
+	
+	private void setModeloTablaTratamiento(ArrayList<Tratamiento> lista) {
+		limpiarTabla(modeloTratamientos);
+		for (Tratamiento trat : lista) {
+			Object[] objs = { trat.getCedula(),trat.getNombre(),trat.getTipo(),trat.getDosis()};
+			modeloTratamientos.addRow(objs);
+		}
 	}
 
 }

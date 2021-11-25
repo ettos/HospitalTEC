@@ -30,4 +30,13 @@ public class AreaDeTrabajo {
 	cadena += "Nombre: " + nombre + "\n";
 	return cadena;
  }
+  
+  public String getStructureCSV() {
+  	return "id,nombre";
+  }
+  
+  public String toStringCSV() {
+  	String cadena = id+","+nombre+"\n";
+  	return cadena;
+  }
 }

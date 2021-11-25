@@ -9,6 +9,8 @@ import javax.mail.MessagingException;
 import excepciones.EmptyListException;
 import logicadenegocios.AreaDeTrabajo;
 import logicadenegocios.Cita;
+import logicadenegocios.Diagnostico;
+import logicadenegocios.Tratamiento;
 import utilidades.EnvioCorreo;
 import utilidades.FuncionesDB;
 import utilidades.ReportesDB;
@@ -73,14 +75,37 @@ public class PacienteControler {
     String date2 = sdf.format(fecha2);
     
 
-		System.out.println(cedula);
-		System.out.println(areaDeTrabajo);
-		System.out.println(estado);
-		System.out.println(date1);
-		System.out.println(date2);
-
     ArrayList<Cita> lista=ReportesDB.consultarCitaRangoFechas(cedula, areaDeTrabajo, estado, date1, date2);
     return lista;
 	}
+	
+	public static ArrayList<Diagnostico> consultarDiagnostico(int cedula, String diagnostico, String nivel, Date fecha1,
+			Date fecha2) throws SQLException, EmptyListException {
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date1 = sdf.format(fecha1);
+    sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date2 = sdf.format(fecha2);
+		ArrayList<Diagnostico> lista=FuncionesDB.consultarDiagnostico(cedula, diagnostico, nivel, date1, date2);
+		return lista;
+	}
+	public static ArrayList<Tratamiento> consultarTratamiento(int cedula, String tratamiento,Date fecha1,
+			Date fecha2) throws SQLException, EmptyListException {
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date1 = sdf.format(fecha1);
+    sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date2 = sdf.format(fecha2);
+		ArrayList<Tratamiento> lista=FuncionesDB.consultarTratamiento(cedula, tratamiento, date1, date2);
+		return lista;
+	}
+	
+	public static ArrayList<Cita> consultarCitas(int cedula,int area,String estado,Date fecha1,Date fecha2) throws SQLException, EmptyListException{
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date1 = sdf.format(fecha1);
+    sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String date2 = sdf.format(fecha2);
+		ArrayList<Cita> lista=FuncionesDB.consultarCitas(cedula, area, estado, date1, date2);
+		return lista;
+	}
+	
 	
 }

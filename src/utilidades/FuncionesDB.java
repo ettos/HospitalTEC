@@ -396,6 +396,23 @@ public class FuncionesDB {
 		return lista;
 	}
 	
+	public static ArrayList<Cita> consultarCitas(int cedula,int area,String estado,String fecha1,String fecha2) throws SQLException, EmptyListException {
+		Connection conn = ConexionMySQL.getConexion();
+	
+		String query = "SELECT Cita.identificador, Cita.cedula, Cita.areaDeTrabajo, Cita.estado, Cita.observacion, Cita.fecha  FROM (Cita INNER JOIN Persona ON Cita.cedula=Persona.cedula) Where "+
+		"Persona.cedula='"+cedula+"' AND "+
+		"Cita.areaDeTrabajo="+area+" AND "+
+		"Cita.estado='"+estado+"' AND "+
+		"(fecha BETWEEN '"+fecha1+"' AND '"+fecha2+"')";
+
+		Statement stmt = conn.createStatement();
+
+		ResultSet rs = stmt.executeQuery(query);
+		
+		ArrayList<Cita> lista=ResultSetToArrayList(rs,"Cita");
+		return lista;
+	}
+	
 
 	public static void updateEstadoCitas(int identificador,String pEstado) throws SQLException, EmptyListException {
 		Connection conn = ConexionMySQL.getConexion();
@@ -524,6 +541,27 @@ public class FuncionesDB {
 		return lista;
 	}
 	
+	public static ArrayList<Diagnostico> consultarDiagnostico(int cedula, String diagnostico, String nivel, String fecha1,
+			String fecha2) throws SQLException, EmptyListException {
+		Connection conn = ConexionMySQL.getConexion();
+
+		String query = "SELECT DiagnosticoPaciente.cedula, DiagnosticoPaciente.nombre,DiagnosticoPaciente.nivel,DiagnosticoPaciente.observaciones FROM "
+				+ "(((DiagnosticoPaciente JOIN DiagnosticoCita ON DiagnosticoPaciente.nombre=DiagnosticoCita.nombre) JOIN "
+				+ " Cita ON Cita.identificador=DiagnosticoCita.identificador) JOIN "
+				+ " Persona ON DiagnosticoPaciente.cedula=Persona.cedula) WHERE "
+				+ " (Cita.fecha BETWEEN '"+fecha1+"' AND '"+fecha2+"') AND "
+				+ " Persona.cedula="+cedula+" AND "
+				+ " DiagnosticoPaciente.nombre='"+diagnostico+"' AND "
+				+ " DiagnosticoPaciente.nivel='"+nivel+"'";
+
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+		ResultSet rs = preparedStmt.executeQuery(query);
+		
+		ArrayList<Diagnostico> lista=ResultSetToArrayList(rs,"DiagnosticoPaciente");
+		return lista;
+	}
+	
 	public static ArrayList<Tratamiento> consultarTratamiento(String nombre, String tratamiento, String tipo, String fecha1,
 			String fecha2) throws SQLException, EmptyListException {
 		Connection conn = ConexionMySQL.getConexion();
@@ -537,6 +575,29 @@ public class FuncionesDB {
 				+ "Persona.nombre='"+nombre+"' AND "
 				+ "TratamientoPaciente.nombre='"+tratamiento+"' AND "
 				+ "Tratamiento.tipo='"+tipo+"' AND "
+				+ "(Cita.fecha BETWEEN '"+fecha1+"' AND '"+fecha2+"')";
+
+
+		PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+		ResultSet rs = preparedStmt.executeQuery(query);
+		
+		ArrayList<Tratamiento> lista=ResultSetToArrayList(rs,"TratamientoPaciente");
+		return lista;
+	}
+	
+	public static ArrayList<Tratamiento> consultarTratamiento(int cedula, String tratamiento, String fecha1,
+			String fecha2) throws SQLException, EmptyListException {
+		Connection conn = ConexionMySQL.getConexion();
+
+		String query="SELECT TratamientoPaciente.cedula,TratamientoPaciente.nombre,TratamientoPaciente.dosis,Tratamiento.tipo FROM  "
+				+ "((((TratamientoPaciente JOIN Tratamiento ON Tratamiento.nombre=TratamientoPaciente.nombre ) "
+				+ "JOIN TratamientoCita ON TratamientoCita.nombre=TratamientoPaciente.nombre)  "
+				+ "JOIN Cita ON TratamientoCita.identificador AND Cita.identificador) "
+				+ "JOIN Persona ON Persona.cedula=TratamientoPaciente.cedula) "
+				+ "WHERE "
+				+ "Persona.cedula="+cedula+" AND "
+				+ "TratamientoPaciente.nombre='"+tratamiento+"' AND "
 				+ "(Cita.fecha BETWEEN '"+fecha1+"' AND '"+fecha2+"')";
 
 

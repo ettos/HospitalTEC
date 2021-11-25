@@ -98,12 +98,16 @@ public class Cita {
 		cadena += "Fecha: " + fecha + "\n";
 		cadena += "Area de Trabajo:\n " + areaTrabajo.toString();
 		cadena += "Observaciones: " + observacion + "\n";
-		cadena += "      Nombre " + "     Niel " + "      Observaciones " + "\n";
-		for (int i = 0; i < diagnosticos.size(); i++) {
-			Diagnostico diagnosticoActual = (Diagnostico) diagnosticos.get(i);
-			cadena += diagnosticoActual.toString() + "\n";
-		}
+		
 		return cadena;
+	}
+	
+	public String getEstructura() {
+		return "identificador,estado,cedula,fecha,areaTrabajo,observacion";
+	}
+	
+	public String getCSV() {
+		return identificador+","+estado+","+cedula+","+fecha+","+areaTrabajo.getId()+","+observacion;
 	}
 
 	public int getCedula() {

@@ -81,15 +81,23 @@ public class Hospitalizacion {
 	
 	@Override
 	public String toString() {
-		String str="Hospitalizacion";
-		str+="codigoCentro=" + codigoCentro;
-		str+="cedula=" + cedula;
-		str+="diagnostico=" + diagnostico;
-		str+= "fechaInicio=" + fechaInicio;
-		str+=", fechaFinal=" + fechaFinal;
-		str+="idArea=" + idArea;
-		str+="identificacion=" +identificacion;
+		String str="";
+		str+="\n Codigo Centro: " + codigoCentro;
+		str+="\n Cedula: " + cedula;
+		str+="\n Diagnostico: " + diagnostico;
+		str+= "\n Fecha Inicio: " + fechaInicio;
+		str+= "\n Fecha Final: " + fechaFinal;
+		str+="\n Id Area: " + idArea;
+		str+="\n Identificacion Funcionario: " +identificacion;
 		return str;
+	}
+	
+	public String getEstructura() {
+		return "codigoCentro,cedula,diagnostico,fechaInicio,fechaFinal,idArea,identificacion";
+	}
+	
+	public String getCSV() {
+		return codigoCentro+","+cedula+","+diagnostico+","+fechaInicio+","+fechaFinal+","+idArea+","+identificacion;
 	}
 
 }

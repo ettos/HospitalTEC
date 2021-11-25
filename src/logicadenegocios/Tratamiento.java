@@ -57,5 +57,12 @@ public class Tratamiento {
 	public void setCedula(int cedula) {
 		this.cedula = cedula;
 	}
+	
+	public String getEstructura() {
+		return "cedula,nombre,dosis,tipo";
+	}
 
+	public String getCSV() {
+		return cedula+","+nombre+","+dosis+","+tipo;
+	}
 }

@@ -54,13 +54,16 @@ public class Diagnostico {
 	cadena += "Nombre: " + nombre + "\n";
     cadena += "Nivel: " + nivel + "\n";
 	cadena += "Observaciones: " +observaciones + "\n";
-	cadena += "      Nombre " + "     Dosis " + "     Tipo " + "\n";
-	for (int i = 0; i < tratamientos.size(); i++) {
-	  Tratamiento tratamientoActual = (Tratamiento) tratamientos.get(i);
-	  cadena +=tratamientoActual.toString() + "\n";
-	}
+
 	return cadena;
  }
+  
+  public String getEstructura() {
+  	return "cedula,nombre,nivel,observaciones";
+  }
+  public String getCSV() {
+  	return cedula+","+nombre+","+nivel+","+observaciones;
+  }
 
 	public int getCedula() {
 		return cedula;

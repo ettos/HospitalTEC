@@ -19,6 +19,8 @@ import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.table.DefaultTableModel;
 
+import com.itextpdf.text.DocumentException;
+
 import controladores.FuncionarioControler;
 import excepciones.EmptyListException;
 import excepciones.IsDigitNotExistException;
@@ -36,6 +38,8 @@ import utilidades.UsuarioLogueado;
 import utilidades.Utilidad;
 
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -768,7 +772,9 @@ public class PantallaFuncionario extends JFrame {
 					
 					listaCitas=FuncionarioControler.consultarCitas(nombre, area, estado, sqlDate1, sqlDate2);
 					setModeloTablaCitas(listaCitas);
-					
+					ReportesDB.generarReporte("Cita",listaCitas);
+					JOptionPane.showMessageDialog(null, "Reporte Generado", "¡Exito!", JOptionPane.INFORMATION_MESSAGE);
+
 				} catch (SQLException e1) {
 					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
@@ -777,6 +783,15 @@ public class PantallaFuncionario extends JFrame {
 				} catch (IsDigitNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "En la fecha solamente se pueden ingresar digitos", "¡ERROR!",
 							JOptionPane.ERROR_MESSAGE);
+				} catch (FileNotFoundException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				} catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
 				}
 			}
 		});
@@ -819,6 +834,12 @@ public class PantallaFuncionario extends JFrame {
 							"Aplicando el area se han encontrado "+citasAreas+" Citas.\n"+
 							"Aplicando el filtro se han encontrado "+listaCitas.size()+" Citas.";
 					
+					ArrayList<String> listaReporte=new ArrayList<String>();
+					listaReporte.add(mensaje);
+					listaReporte.add("total,totalArea,filtro");
+					listaReporte.add(total+","+citasAreas+","+listaCitas.size());
+					
+					ReportesDB.generarReporte(listaReporte);
 					
 					JOptionPane.showMessageDialog(null, mensaje,"Reporte de Cantidad de Citas", JOptionPane.INFORMATION_MESSAGE);
 
@@ -832,6 +853,10 @@ public class PantallaFuncionario extends JFrame {
 							JOptionPane.ERROR_MESSAGE);
 				} catch (ValidarRangoNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "Debe ingresar el nombre del paciente", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Problemas internos en las carpetas del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Problemas internos en las carpetas del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -855,7 +880,7 @@ public class PantallaFuncionario extends JFrame {
 		lblLogo_2.setIcon(new ImageIcon("\\img\\ConsultasCitasOscura.png"));
 		lblLogo_2.setBounds(241, 17, 50, 50);
 		pnlCitasConsultas.add(lblLogo_2);
-		
+		/*
 		JButton btnReporteC = new JButton("Reporte");
 		btnReporteC.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -863,7 +888,7 @@ public class PantallaFuncionario extends JFrame {
 		});
 		btnReporteC.setBounds(10, 440, 89, 23);
 		pnlCitasConsultas.add(btnReporteC);
-
+*/
 		JPanel pnlDiagnosticoConsulta = new JPanel();
 		pnlDiagnosticoConsulta.setBackground(Color.decode("#d9d8dd"));
 		tOpcionesFuncionario.addTab("Consulta de Diagnóstico", null, pnlDiagnosticoConsulta, null);
@@ -1005,6 +1030,8 @@ public class PantallaFuncionario extends JFrame {
 					
 					listaDiagnosticos=FuncionarioControler.consultarDiagnostico(nombre, diagnostico, nivel, sqlDate1, sqlDate2);
 					setModeloTablaDiagnosticos(listaDiagnosticos);
+					ReportesDB.generarReporte("Diagnostico",listaDiagnosticos);
+					JOptionPane.showMessageDialog(null, "Reporte Generado", "¡ERROR!", JOptionPane.INFORMATION_MESSAGE);
 								
 				} catch (SQLException e1) {
 					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
@@ -1016,6 +1043,10 @@ public class PantallaFuncionario extends JFrame {
 							JOptionPane.ERROR_MESSAGE);
 				} catch (ValidarRangoNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "Debe escribir el nombre del paciente", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -1057,6 +1088,12 @@ public class PantallaFuncionario extends JFrame {
 							"Aplicando el nombre se han encontrado "+diagnosticosNombre+" diagnosticos.\n"+
 							"Aplicando el filtro se han encontrado "+listaDiagnosticos.size()+" diagnosticos.";
 					
+					ArrayList<String> listaReporte=new ArrayList<String>();
+					listaReporte.add(mensaje);
+					listaReporte.add("totalDiagnositocs,nombre,filtro");
+					listaReporte.add(total+","+diagnosticosNombre+","+listaDiagnosticos.size());
+					
+					ReportesDB.generarReporte(listaReporte);
 					
 					JOptionPane.showMessageDialog(null, mensaje,"Reporte de Cantidad de Citas", JOptionPane.INFORMATION_MESSAGE);
 
@@ -1070,6 +1107,10 @@ public class PantallaFuncionario extends JFrame {
 							JOptionPane.ERROR_MESSAGE);
 				} catch (ValidarRangoNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "Debe ingresar el nombre del usuario", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Problema interno en las carpetas del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Problema interno en las carpetas del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 				}
 				
 				
@@ -1083,7 +1124,7 @@ public class PantallaFuncionario extends JFrame {
 		lblLogo_3.setIcon(new ImageIcon("img\\logoDiagnostico.png"));
 		lblLogo_3.setBounds(237, 11, 50, 50);
 		pnlDiagnosticoConsulta.add(lblLogo_3);
-		
+		/*
 		JButton btnReporteD = new JButton("Reporte");
 		btnReporteD.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1091,7 +1132,7 @@ public class PantallaFuncionario extends JFrame {
 		});
 		btnReporteD.setBounds(10, 440, 89, 23);
 		pnlDiagnosticoConsulta.add(btnReporteD);
-
+*/
 		JPanel pnlTratamientoConsulta = new JPanel();
 		pnlTratamientoConsulta.setBackground(Color.decode("#f3f2f5"));
 		tOpcionesFuncionario.addTab("Consultas de Tratamiento", null, pnlTratamientoConsulta, null);
@@ -1242,6 +1283,9 @@ public class PantallaFuncionario extends JFrame {
 					
 					listaTratamientos=FuncionarioControler.consultarTratamiento(nombre, tratamiento, tipo, sqlDate1, sqlDate2);
 					setModeloTablaTratamiento(listaTratamientos);
+					
+					ReportesDB.generarReporte("Tratamiento",listaTratamientos);
+					JOptionPane.showMessageDialog(null, "Reporte Generado", "¡ERROR!", JOptionPane.INFORMATION_MESSAGE);
 								
 				} catch (SQLException e1) {
 					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
@@ -1254,6 +1298,10 @@ public class PantallaFuncionario extends JFrame {
 				} catch (ValidarRangoNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "Debe ingresar el nombre del ususario", "¡ERROR!",
 							JOptionPane.ERROR_MESSAGE);				
+				} catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error en las carpetas del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
 				}
 				
 			}
@@ -1298,6 +1346,13 @@ public class PantallaFuncionario extends JFrame {
 							"Aplicando el filtro se han encontrado "+listaTratamientos.size()+" diagnosticos.";
 					
 					
+					ArrayList<String> listaReporte=new ArrayList<String>();
+					listaReporte.add(mensaje);
+					listaReporte.add("total,tratamientosNombre,filtro");
+					listaReporte.add(total+","+tratamientosNombre+","+listaTratamientos.size());
+					
+					ReportesDB.generarReporte(listaReporte);
+					
 					JOptionPane.showMessageDialog(null, mensaje,"Reporte de Cantidad de Citas", JOptionPane.INFORMATION_MESSAGE);
 					
 								
@@ -1317,6 +1372,10 @@ public class PantallaFuncionario extends JFrame {
 					}
 				} catch (ValidarRangoNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "Debe ingresar el nombre del paciente", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+				} catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Error interno en las carpetal locales del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error interno en las carpetal locales del equipo", "¡ERROR!",JOptionPane.ERROR_MESSAGE);
 				}
 				
 				
@@ -1330,7 +1389,7 @@ public class PantallaFuncionario extends JFrame {
 		lblLogo_5.setIcon(new ImageIcon("img\\logoTratamientoOscuro.png"));
 		lblLogo_5.setBounds(240, 11, 50, 50);
 		pnlTratamientoConsulta.add(lblLogo_5);
-		
+		/*
 		JButton btnReporteT = new JButton("Reporte");
 		btnReporteT.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1338,7 +1397,7 @@ public class PantallaFuncionario extends JFrame {
 		});
 		btnReporteT.setBounds(9, 440, 89, 23);
 		pnlTratamientoConsulta.add(btnReporteT);
-
+*/
 		JPanel pnlHospitalizacion = new JPanel();
 		pnlHospitalizacion.setBackground(Color.decode("#3c4f6d"));
 		tOpcionesFuncionario.addTab("Hospitalizaciones", null, pnlHospitalizacion, null);
@@ -1384,7 +1443,9 @@ public class PantallaFuncionario extends JFrame {
 					
 					listaHospitalizaciones=ReportesDB.consultarHospitalización(nombre);
 					setModeloTablaHospitalizaciones(listaHospitalizaciones);
-								
+					ReportesDB.generarReporte("Hospitalizacion",listaHospitalizaciones);
+					JOptionPane.showMessageDialog(null, "Reporte Generado", "¡ERROR!", JOptionPane.INFORMATION_MESSAGE);			
+					
 				} catch (SQLException e1) {
 					JOptionPane.showMessageDialog(null, "Error en la busqueda", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
@@ -1392,6 +1453,10 @@ public class PantallaFuncionario extends JFrame {
 					JOptionPane.showMessageDialog(null, "No se han encontrado tratamientos", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 				} catch (ValidarRangoNotExistException e1) {
 					JOptionPane.showMessageDialog(null, "Debe escribir el nombre del paciente", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (DocumentException e1) {
+					JOptionPane.showMessageDialog(null, "Error interno en la carpeta del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error interno en la carpeta del equipo", "¡ERROR!", JOptionPane.ERROR_MESSAGE);
 				}
 				
 			}
@@ -1429,6 +1494,7 @@ public class PantallaFuncionario extends JFrame {
 		btnSeguimiento.setBounds(532, 121, 159, 23);
 		pnlHospitalizacion.add(btnSeguimiento);
 		
+		/*
 		JButton btnReporteH = new JButton("Reporte");
 		btnReporteH.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1436,7 +1502,7 @@ public class PantallaFuncionario extends JFrame {
 		});
 		btnReporteH.setBounds(602, 86, 89, 23);
 		pnlHospitalizacion.add(btnReporteH);
-
+*/
 		JButton btnGestionDyT = new JButton("");
 		btnGestionDyT.setBackground(Color.decode("#f6f7f2"));
 		btnGestionDyT.addActionListener(new ActionListener() {

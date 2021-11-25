@@ -177,7 +177,7 @@ CREATE TABLE Seguimiento(
   FOREIGN KEY (cedula) REFERENCES Persona(cedula) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (tratamiento) REFERENCES Tratamiento(nombre) ON DELETE CASCADE ON UPDATE CASCADE
 );
- 
+
  -- Tabla intermedia -- 
 CREATE TABLE CentoDeAtencionAreaDeTrabajo(
   codigoCentro int,
